@@ -1,0 +1,72 @@
+{
+  "4242424242424242": {
+    "brand": "Visa",
+    "country": "US",
+    "funding": "credit"
+  },
+  "4012888888881881": {
+    "brand": "Visa",
+    "country": "US",
+    "funding": "credit"
+  },
+  "4000056655665556": {
+    "brand": "Visa",
+    "country": "US",
+    "funding": "debit"
+  },
+  "5555555555554444": {
+    "brand": "Mastercard",
+    "country": "US",
+    "funding": "credit"
+  },
+  "5200828282828210": {
+    "brand": "Mastercard",
+    "country": "US",
+    "funding": "debit"
+  },
+  "5105105105105100": {
+    "brand": "Mastercard",
+    "country": "US",
+    "funding": "prepaid"
+  },
+  "378282246310005": {
+    "brand": "American Express",
+    "country": "US",
+    "funding": "credit"
+  },
+  "371449635398431": {
+    "brand": "American Express",
+    "country": "US",
+    "funding": "credit"
+  },
+  "6011111111111117": {
+    "brand": "Discover",
+    "country": "US",
+    "funding": "credit"
+  },
+  "6011000990139424": {
+    "brand": "Discover",
+    "country": "US",
+    "funding": "credit"
+  },
+  "30569309025904": {
+    "brand": "Diners Club",
+    "country": "US",
+    "funding": "credit"
+  },
+  "38520000023237": {
+    "brand": "Diners Club",
+    "country": "US",
+    "funding": "credit"
+  },
+  "3530111333300000": {
+    "brand": "JCB",
+    "country": "US",
+    "funding": "credit"
+  },
+  "3566002020360505": {
+    "brand": "JCB",
+    "country": "US",
+    "funding": "credit"
+  }
+}

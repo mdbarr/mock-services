@@ -1,0 +1,30 @@
+{
+  "name": "mock-services",
+  "version": "0.0.1",
+  "description": "Mock Services for Test Automation",
+  "main": "index.js",
+  "repository": "git@github.com:mdbarr/mock-services.git",
+  "author": "Mark Barr <mark@hyperingenuity.com>",
+  "license": "MIT",
+  "dependencies": {
+    "async": "^3.2.0",
+    "mailparser": "^3.0.0",
+    "nodemailer": "^6.4.10",
+    "request": "^2.88.2",
+    "restify": "^8.5.1",
+    "restify-cors-middleware": "^1.1.1",
+    "smtp-server": "^3.7.0",
+    "yargs": "^16.0.3"
+  },
+  "devDependencies": {
+    "eslint": "^7.5.0",
+    "jest": "^26.1.0",
+    "stripe": "^8.79.0"
+  },
+  "scripts": {
+    "build": "docker build --pull -t mock-sendgrid .",
+    "lint": "eslint *.js bin stripe sendgrid",
+    "run:docker": "docker run -d --rm --name mock-sendgrid -p 5870:5870 -p 5871:5871 mock-sendgrid:latest",
+    "start": "forever --minUptime=1000 --spinSleepTime=500 ./cli.js"
+  }
+}
