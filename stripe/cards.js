@@ -1,6 +1,6 @@
 'use strict';
 
-function Cards (stripe) {
+function Cards (mock, stripe) {
   this.retrieveCard = (req, res, next) => {
     const context = stripe.model.context(req, res, next);
     const customer = stripe.store.getCustomer(context.identity, req.params.customer);
@@ -72,7 +72,7 @@ function Cards (stripe) {
       'address_state', 'address_zip', 'exp_month', 'exp_year', 'metadata', 'name',
     ];
 
-    const [ update, previous ] = stripe.util.createUpdateObject(fields, card, req.body);
+    const [ update, previous ] = stripe.createUpdateObject(fields, card, req.body);
 
     card = stripe.store.updateCard(context.identity, req.params.card, update);
 
@@ -137,11 +137,11 @@ function Cards (stripe) {
 
   ////////////////////
 
-  stripe.server.get('/v1/customers/:customer/sources/:card', stripe.auth.requireAdmin, this.retrieveCard);
-  stripe.server.post('/v1/customers/:customer/sources/:card', stripe.auth.requireAdmin, this.updateCard);
-  stripe.server.del('/v1/customers/:customer/sources/:card', stripe.auth.requireAdmin, this.deleteCard);
+  mock.api.get('/v1/customers/:customer/sources/:card', stripe.auth.requireAdmin, this.retrieveCard);
+  mock.api.post('/v1/customers/:customer/sources/:card', stripe.auth.requireAdmin, this.updateCard);
+  mock.api.del('/v1/customers/:customer/sources/:card', stripe.auth.requireAdmin, this.deleteCard);
 
   ////////////////////
 }
 
-module.exports = (stripe) => new Cards(stripe);
+module.exports = (mock, stripe) => new Cards(mock, stripe);

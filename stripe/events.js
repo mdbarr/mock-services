@@ -1,6 +1,6 @@
 'use strict';
 
-function Events (stripe) {
+function Events (mock, stripe) {
   this.retrieveEvent = (req, res, next) => {
     const context = stripe.model.context(req, res, next);
 
@@ -34,10 +34,10 @@ function Events (stripe) {
 
   ////////////////////
 
-  stripe.server.get('/v1/events/:event', this.retrieveEvent);
-  stripe.server.get('/v1/events', this.listAllEvents);
+  mock.api.get('/v1/events/:event', this.retrieveEvent);
+  mock.api.get('/v1/events', this.listAllEvents);
 
   ////////////////////
 }
 
-module.exports = (stripe) => new Events(stripe);
+module.exports = (mock, stripe) => new Events(mock, stripe);

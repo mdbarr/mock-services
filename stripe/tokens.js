@@ -1,6 +1,6 @@
 'use strict';
 
-function Tokens (stripe) {
+function Tokens (mock, stripe) {
   this.createToken = (req, res, next) => {
     const context = stripe.model.context(req, res, next);
     if (!req.body.card || !req.body.card.number ||
@@ -37,7 +37,7 @@ function Tokens (stripe) {
       clientIp: req.connection.remoteAddress,
     });
 
-    const response = stripe.util.clone(token);
+    const response = mock.utils.clone(token);
     response.card = card;
 
     context.send(200, response);
@@ -66,7 +66,7 @@ function Tokens (stripe) {
       });
     }
 
-    const response = stripe.util.clone(token);
+    const response = mock.utils.clone(token);
     response.card = card;
 
     context.send(200, response);
@@ -75,10 +75,10 @@ function Tokens (stripe) {
 
   ////////////////////
 
-  stripe.server.post('/v1/tokens', this.createToken);
-  stripe.server.get('/v1/tokens/:id', this.retrieveToken);
+  mock.api.post('/v1/tokens', this.createToken);
+  mock.api.get('/v1/tokens/:id', this.retrieveToken);
 
   ////////////////////
 }
 
-module.exports = (stripe) => new Tokens(stripe);
+module.exports = (mock, stripe) => new Tokens(mock, stripe);

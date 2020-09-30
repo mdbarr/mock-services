@@ -1,8 +1,8 @@
 'use strict';
 
-function Subscriptions (stripe) {
+function Subscriptions (mock, stripe) {
   this.populateSubscription = (identity, subscription) => {
-    const response = stripe.util.clone(subscription);
+    const response = mock.utils.clone(subscription);
 
     for (const item of response.items.data) {
       item.plan = stripe.store.getPlan(identity, item.plan);
@@ -269,7 +269,7 @@ function Subscriptions (stripe) {
       'metadata', 'source', 'tax_percent', 'plan', 'quantity',
     ];
 
-    const [ update, previous ] = stripe.util.createUpdateObject(fields, subscription, req.body);
+    const [ update, previous ] = stripe.createUpdateObject(fields, subscription, req.body);
 
     subscription = stripe.store.updateSubscription(context.identity, subscription.id, update);
 
@@ -300,8 +300,8 @@ function Subscriptions (stripe) {
       });
     }
 
-    subscription.canceled_at = stripe.util.timestamp();
-    if (req.query && stripe.util.toBoolean(req.query.at_period_end)) {
+    subscription.canceled_at = mock.utils.timestamp();
+    if (req.query && mock.utils.toBoolean(req.query.at_period_end)) {
       subscription.cancel_at_period_end = true;
     } else {
       subscription.status = 'canceled';
@@ -333,21 +333,21 @@ function Subscriptions (stripe) {
 
   ////////////////////
 
-  stripe.server.post('/v1/subscriptions', stripe.auth.requireAdmin, this.createSubscription);
-  stripe.server.post('/v1/customers/:customer/subscriptions', stripe.auth.requireAdmin, this.createSubscription);
+  mock.api.post('/v1/subscriptions', stripe.auth.requireAdmin, this.createSubscription);
+  mock.api.post('/v1/customers/:customer/subscriptions', stripe.auth.requireAdmin, this.createSubscription);
 
-  stripe.server.get('/v1/subscriptions/:subscription', stripe.auth.requireAdmin, this.retrieveSubscription);
-  stripe.server.get('/v1/customers/:customer/subscriptions/:subscription', stripe.auth.requireAdmin, this.retrieveSubscription);
+  mock.api.get('/v1/subscriptions/:subscription', stripe.auth.requireAdmin, this.retrieveSubscription);
+  mock.api.get('/v1/customers/:customer/subscriptions/:subscription', stripe.auth.requireAdmin, this.retrieveSubscription);
 
-  stripe.server.post('/v1/subscriptions/:subscription', stripe.auth.requireAdmin, this.updateSubscription);
-  stripe.server.post('/v1/customers/:customer/subscriptions/:subscription', stripe.auth.requireAdmin, this.updateSubscription);
+  mock.api.post('/v1/subscriptions/:subscription', stripe.auth.requireAdmin, this.updateSubscription);
+  mock.api.post('/v1/customers/:customer/subscriptions/:subscription', stripe.auth.requireAdmin, this.updateSubscription);
 
-  stripe.server.del('/v1/subscriptions/:subscription', stripe.auth.requireAdmin, this.cancelSubscription);
-  stripe.server.del('/v1/customers/:customer/subscriptions/:subscription', stripe.auth.requireAdmin, this.cancelSubscription);
+  mock.api.del('/v1/subscriptions/:subscription', stripe.auth.requireAdmin, this.cancelSubscription);
+  mock.api.del('/v1/customers/:customer/subscriptions/:subscription', stripe.auth.requireAdmin, this.cancelSubscription);
 
-  stripe.server.get('/v1/subscriptions', stripe.auth.requireAdmin, this.listSubscriptions);
+  mock.api.get('/v1/subscriptions', stripe.auth.requireAdmin, this.listSubscriptions);
 
   ////////////////////
 }
 
-module.exports = (stripe) => new Subscriptions(stripe);
+module.exports = (mock, stripe) => new Subscriptions(mock, stripe);

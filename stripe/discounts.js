@@ -1,6 +1,6 @@
 'use strict';
 
-function Discounts (stripe) {
+function Discounts (mock, stripe) {
   this.deleteCustomerDiscount = (req, res, next) => {
     const context = stripe.model.context(req, res, next);
 
@@ -83,10 +83,10 @@ function Discounts (stripe) {
 
   ////////////////////
 
-  stripe.server.del('/v1/customers/:customer/discount', stripe.auth.requireAdmin, this.deleteCustomerDiscount);
-  stripe.server.del('/v1/subscriptions/:subscription/discount', stripe.auth.requireAdmin, this.deleteSubscriptionDiscount);
+  mock.api.del('/v1/customers/:customer/discount', stripe.auth.requireAdmin, this.deleteCustomerDiscount);
+  mock.api.del('/v1/subscriptions/:subscription/discount', stripe.auth.requireAdmin, this.deleteSubscriptionDiscount);
 
   ////////////////////
 }
 
-module.exports = (stripe) => new Discounts(stripe);
+module.exports = (mock, stripe) => new Discounts(mock, stripe);

@@ -1,6 +1,6 @@
 'use strict';
 
-function Errors (stripe) {
+function Errors (mock, stripe) {
   this.sendError = function({
     type, code, param, detail, statusCode = 400, message, context,
   }) {
@@ -19,7 +19,7 @@ function Errors (stripe) {
     };
 
     if (!stripe.options.silent) {
-      console.log('%s [%s/%s]: %s', stripe.util.colorize('red', 'ERROR'), statusCode, type, message);
+      console.log('%s [%s/%s]: %s', mock.utils.colorize('red', 'ERROR'), statusCode, type, message);
     }
 
     context.send(statusCode, response);
@@ -47,4 +47,4 @@ function Errors (stripe) {
   };
 }
 
-module.exports = (stripe) => new Errors(stripe);
+module.exports = (mock, stripe) => new Errors(mock, stripe);

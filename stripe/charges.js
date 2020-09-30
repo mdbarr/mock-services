@@ -1,6 +1,6 @@
 'use strict';
 
-function Charges (stripe) {
+function Charges (mock, stripe) {
   this.retrieveCharge = (req, res, next) => {
     const context = stripe.model.context(req, res, next);
     const charge = stripe.store.getCharge(context.identity, req.params.charge);
@@ -15,7 +15,7 @@ function Charges (stripe) {
 
     const card = stripe.store.getCard(context.identity, charge.source);
 
-    const response = stripe.util.clone(charge);
+    const response = mock.utils.clone(charge);
     response.source = card;
 
     context.send(200, response);
@@ -38,10 +38,10 @@ function Charges (stripe) {
 
   ////////////////////
 
-  stripe.server.get('/v1/charges/:charge', stripe.auth.requireAdmin, this.retrieveCharge);
-  stripe.server.get('/v1/charges', stripe.auth.requireAdmin, this.listAllCharges);
+  mock.api.get('/v1/charges/:charge', stripe.auth.requireAdmin, this.retrieveCharge);
+  mock.api.get('/v1/charges', stripe.auth.requireAdmin, this.listAllCharges);
 
   ////////////////////
 }
 
-module.exports = (stripe) => new Charges(stripe);
+module.exports = (mock, stripe) => new Charges(mock, stripe);

@@ -1,6 +1,6 @@
 'use strict';
 
-function Auth (stripe) {
+function Auth (mock, stripe) {
   const defaultKey = {
     name: 'default',
     secretKey: /sk_test_.*/,
@@ -67,7 +67,7 @@ function Auth (stripe) {
     return next();
   };
 
-  stripe.server.use(this.validateApiKey);
+  mock.api.use(this.validateApiKey);
 }
 
-module.exports = (stripe) => new Auth(stripe);
+module.exports = (mock, stripe) => new Auth(mock, stripe);

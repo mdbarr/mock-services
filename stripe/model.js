@@ -1,8 +1,8 @@
 'use strict';
 
-function Model (stripe) {
+function Model (mock, stripe) {
   this.context = (request, response, next) => {
-    const timestamp = stripe.util.timestamp();
+    const timestamp = mock.utils.timestamp();
     const model = {
       identity: request.authorization.identity,
       admin: request.authorization.admin,
@@ -168,7 +168,7 @@ function Model (stripe) {
       metadata: metadata || {},
       name: card.name || null,
       tokenization_method: null,
-      create: stripe.util.timestamp(),
+      create: mock.utils.timestamp(),
     };
 
     stripe.store.addCard(context.identity, model.id, model);
@@ -184,7 +184,7 @@ function Model (stripe) {
       object: 'token',
       card,
       client_ip: clientIp,
-      created: stripe.util.timestamp(),
+      created: mock.utils.timestamp(),
       livemode: context.livemode,
       type: 'card',
       used: false,
@@ -203,7 +203,7 @@ function Model (stripe) {
       id,
       object: 'plan',
       amount: Number(amount) || 0,
-      created: stripe.util.timestamp(),
+      created: mock.utils.timestamp(),
       currency,
       interval,
       interval_count: Number(interval_count) || 1,
@@ -227,7 +227,7 @@ function Model (stripe) {
       id: id || `cou_${ stripe.store.generateId(24) }`,
       object: 'coupon',
       amount_off: Number(amount_off) || null,
-      created: stripe.util.timestamp(),
+      created: mock.utils.timestamp(),
       currency: currency || null,
       duration,
       duration_in_months: Number(duration_in_months) || null,
@@ -252,7 +252,7 @@ function Model (stripe) {
       id: `cus_${ stripe.store.generateId(24) }`,
       object: 'customer',
       account_balance: 0,
-      created: stripe.util.timestamp(),
+      created: mock.utils.timestamp(),
       currency: 'usd',
       default_source: card ? card.id : null,
       delinquent: false,
@@ -275,7 +275,7 @@ function Model (stripe) {
     const model = {
       id: `si_${ stripe.store.generateId(24) }`,
       object: 'subscription_item',
-      created: stripe.util.timestamp(),
+      created: mock.utils.timestamp(),
       metadata: metadata || {},
       plan: plan.id,
       quantity: Number(quantity) || 1,
@@ -289,7 +289,7 @@ function Model (stripe) {
     tax_percent, trial_end, trial_period_days,
   }) {
     const id = `sub_${ stripe.store.generateId(24) }`;
-    const timestamp = stripe.util.timestamp();
+    const timestamp = mock.utils.timestamp();
 
     let discount;
     if (coupon) {
@@ -370,7 +370,7 @@ function Model (stripe) {
     start, end, plan, quantity, subscription, type,
     subscription_item, coupon, upcoming, proration,
   }) {
-    const timestamp = stripe.util.timestamp();
+    const timestamp = mock.utils.timestamp();
 
     const model = {
       id,
@@ -386,7 +386,7 @@ function Model (stripe) {
         end: end || timestamp,
       },
       plan: plan || null,
-      proration: stripe.util.toBoolean(proration),
+      proration: mock.utils.toBoolean(proration),
       quantity: quantity || 1,
       subscription: subscription || null,
       subscription_item: subscription_item || null,
@@ -415,7 +415,7 @@ function Model (stripe) {
     invoice, metadata, subscription, plan, quantity,
     subscription_item, proration, start, end,
   }) {
-    const timestamp = stripe.util.timestamp();
+    const timestamp = mock.utils.timestamp();
 
     const model = {
       id: `ii_${ stripe.store.generateId(24) }`,
@@ -434,7 +434,7 @@ function Model (stripe) {
         end: end || timestamp,
       },
       plan: plan || null,
-      proration: stripe.util.toBoolean(proration),
+      proration: mock.utils.toBoolean(proration),
       quantity: quantity || 1,
       subscription: subscription || null,
       subscription_item: subscription_item || null,
@@ -451,7 +451,7 @@ function Model (stripe) {
     pay,
   }) {
     const id = upcoming ? 'upcoming' : `in_${ stripe.store.generateId(24) }`;
-    const timestamp = stripe.util.timestamp();
+    const timestamp = mock.utils.timestamp();
     const items = [];
 
     let discount = null;
@@ -652,7 +652,7 @@ function Model (stripe) {
       application_fee: null,
       balance_transaction: `txn_${ stripe.store.generateId(24) }`,
       captured: true,
-      created: stripe.util.timestamp(),
+      created: mock.utils.timestamp(),
       currency: currency || 'usd',
       customer: customer ? customer.id : null,
       description: description || null,
@@ -689,7 +689,7 @@ function Model (stripe) {
 
     stripe.store.addCharge(context.identity, model.id, model);
 
-    const event = stripe.util.clone(model);
+    const event = mock.utils.clone(model);
     event.source = stripe.store.getCard(context.identity, card);
 
     this.event({
@@ -716,7 +716,7 @@ function Model (stripe) {
       coupon: coupon.id,
       customer,
       end: null,
-      start: stripe.util.timestamp(),
+      start: mock.utils.timestamp(),
       subscription,
     };
 
@@ -737,7 +737,7 @@ function Model (stripe) {
       id: `evt_${ stripe.store.generateId(24) }`,
       object: 'event',
       api_version: stripe.options.apiVersion,
-      created: stripe.util.timestamp(),
+      created: mock.utils.timestamp(),
       data: { object },
       livemode: context.livemode,
       pending_webhooks: 0,
@@ -767,7 +767,7 @@ function Model (stripe) {
   }) {
     const model = {
       id: `wh_${ stripe.store.generateId(24) }`,
-      created: stripe.util.timestamp(),
+      created: mock.utils.timestamp(),
       url,
       sharedSecret,
       events: events || [ '*' ],
@@ -799,4 +799,4 @@ function Model (stripe) {
   };
 }
 
-module.exports = (stripe) => new Model(stripe);
+module.exports = (mock, stripe) => new Model(mock, stripe);

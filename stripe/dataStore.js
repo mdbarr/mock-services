@@ -2,9 +2,9 @@
 
 const fs = require('fs');
 
-function DataStore (stripe) {
+function DataStore (mock, stripe) {
   const store = {
-    prefix: stripe.util.generateAlphaNumeric(6),
+    prefix: mock.utils.generateAlphaNumeric(6),
     keys: {},
     cards: {},
     tokens: {},
@@ -24,7 +24,7 @@ function DataStore (stripe) {
 
   ////////////////////////////////////////
 
-  stripe.server.get('/data/store', (req, res, next) => {
+  mock.api.get('/data/store', (req, res, next) => {
     res.sendRaw(200, JSON.stringify(store, null, 2));
     return next();
   });
@@ -96,7 +96,7 @@ function DataStore (stripe) {
       container[identity] = {};
     }
     if (container[identity][id]) {
-      return stripe.util.updateObject(container[identity][id], object);
+      return stripe.updateObject(container[identity][id], object);
     }
     return false;
   };
@@ -259,4 +259,4 @@ function DataStore (stripe) {
   ////////////////////////////////////////
 }
 
-module.exports = (stripe) => new DataStore(stripe);
+module.exports = (mock, stripe) => new DataStore(mock, stripe);

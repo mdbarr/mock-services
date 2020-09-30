@@ -1,6 +1,6 @@
 'use strict';
 
-function Customers (stripe) {
+function Customers (mock, stripe) {
   this.addSources = (identity, customer) => {
     const cards = stripe.store.findCards(identity, {
       customer: customer.id,
@@ -41,7 +41,7 @@ function Customers (stripe) {
   this.addDiscount = (identity, customer) => {
     let discount = stripe.store.getDiscount(identity, customer.id);
     if (discount) {
-      discount = stripe.util.clone(discount);
+      discount = mock.utils.clone(discount);
       discount.coupon = stripe.store.getCoupon(identity, discount.coupon);
       customer.discount = discount;
     }
@@ -105,7 +105,7 @@ function Customers (stripe) {
       });
     }
 
-    const response = stripe.util.clone(customer);
+    const response = mock.utils.clone(customer);
     this.addSources(context.identity, response);
     this.addSubscriptions(context.identity, response);
     this.addDiscount(context.identity, response);
@@ -126,7 +126,7 @@ function Customers (stripe) {
       });
     }
 
-    const response = stripe.util.clone(customer);
+    const response = mock.utils.clone(customer);
     this.addSources(context.identity, response);
     this.addSubscriptions(context.identity, response);
     this.addDiscount(context.identity, response);
@@ -197,7 +197,7 @@ function Customers (stripe) {
       'description', 'email', 'metadata', 'shipping',
     ];
 
-    const [ update, previous ] = stripe.util.createUpdateObject(fields, customer, req.body);
+    const [ update, previous ] = stripe.createUpdateObject(fields, customer, req.body);
 
     customer = stripe.store.updateCustomer(context.identity, req.params.customer, update);
 
@@ -208,7 +208,7 @@ function Customers (stripe) {
       previous,
     });
 
-    const response = stripe.util.clone(customer);
+    const response = mock.utils.clone(customer);
     this.addSources(context.identity, response);
     this.addSubscriptions(context.identity, response);
     this.addDiscount(context.identity, response);
@@ -262,13 +262,13 @@ function Customers (stripe) {
 
   ////////////////////
 
-  stripe.server.post('/v1/customers', stripe.auth.requireAdmin, this.createCustomer);
-  stripe.server.get('/v1/customers/:customer', this.retrieveCustomer);
-  stripe.server.post('/v1/customers/:customer', stripe.auth.requireAdmin, this.updateCustomer);
-  stripe.server.del('/v1/customers/:customer', stripe.auth.requireAdmin, this.deleteCustomer);
-  stripe.server.get('/v1/customers', this.listAllCustomers);
+  mock.api.post('/v1/customers', stripe.auth.requireAdmin, this.createCustomer);
+  mock.api.get('/v1/customers/:customer', this.retrieveCustomer);
+  mock.api.post('/v1/customers/:customer', stripe.auth.requireAdmin, this.updateCustomer);
+  mock.api.del('/v1/customers/:customer', stripe.auth.requireAdmin, this.deleteCustomer);
+  mock.api.get('/v1/customers', this.listAllCustomers);
 
   ////////////////////
 }
 
-module.exports = (stripe) => new Customers(stripe);
+module.exports = (mock, stripe) => new Customers(mock, stripe);

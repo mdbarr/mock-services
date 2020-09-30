@@ -1,6 +1,6 @@
 'use strict';
 
-function Plans (stripe) {
+function Plans (mock, stripe) {
   this.createPlan = (req, res, next) => {
     const context = stripe.model.context(req, res, next);
     if (!req.body.id || !req.body.amount || !req.body.currency ||
@@ -75,7 +75,7 @@ function Plans (stripe) {
 
     const fields = [ 'metadata', 'name', 'statement_descriptor', 'trial_period_days' ];
 
-    const [ update, previous ] = stripe.util.createUpdateObject(fields, plan, req.body);
+    const [ update, previous ] = stripe.createUpdateObject(fields, plan, req.body);
 
     plan = stripe.store.updatePlan(context.identity, req.params.plan, update);
 
@@ -135,13 +135,13 @@ function Plans (stripe) {
 
   ////////////////////
 
-  stripe.server.post('/v1/plans', stripe.auth.requireAdmin, this.createPlan);
-  stripe.server.get('/v1/plans/:plan', this.retrievePlan);
-  stripe.server.post('/v1/plans/:plan', stripe.auth.requireAdmin, this.updatePlan);
-  stripe.server.del('/v1/plans/:plan', stripe.auth.requireAdmin, this.deletePlan);
-  stripe.server.get('/v1/plans', this.listAllPlans);
+  mock.api.post('/v1/plans', stripe.auth.requireAdmin, this.createPlan);
+  mock.api.get('/v1/plans/:plan', this.retrievePlan);
+  mock.api.post('/v1/plans/:plan', stripe.auth.requireAdmin, this.updatePlan);
+  mock.api.del('/v1/plans/:plan', stripe.auth.requireAdmin, this.deletePlan);
+  mock.api.get('/v1/plans', this.listAllPlans);
 
   ////////////////////
 }
 
-module.exports = (stripe) => new Plans(stripe);
+module.exports = (mock, stripe) => new Plans(mock, stripe);

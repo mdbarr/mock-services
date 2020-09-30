@@ -1,10 +1,11 @@
 'use strict';
 
 module.exports = {
+  host: '0.0.0.0',
+  port: 5775,
   sendgrid: {
     allowUnauthorized: true,
     smtpPort: 5870,
-    apiPort: 5871,
     behaviors: {
       reject: '+should+reject+',
       drop: '+should+drop+',
@@ -25,7 +26,7 @@ module.exports = {
     ],
   },
   stripe: {
-    name: 'Default',
+    name: 'mock-stripe-server',
     livemode: false,
     keys: {
       secret: 'sk_test_a28286383674d872787a8807',
@@ -33,12 +34,12 @@ module.exports = {
     },
     plans: [
       {
-        amount: '5000',
+        amount: '500',
         interval: 'year',
         name: 'Default Yearly',
         currency: 'usd',
         statement_descriptor: 'Default Yearly Plan',
-        id: 'DEFAULT_YEAR',
+        id: 'DEFAULT_YEARLY',
       },
     ],
   },

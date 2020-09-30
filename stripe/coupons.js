@@ -1,6 +1,6 @@
 'use strict';
 
-function Coupons (stripe) {
+function Coupons (mock, stripe) {
   this.createCoupon = (req, res, next) => {
     const context = stripe.model.context(req, res, next);
     if (!req.body.duration || !(req.body.amount_off && req.body.currency || req.body.percent_off) ||
@@ -138,13 +138,13 @@ function Coupons (stripe) {
 
   ////////////////////
 
-  stripe.server.post('/v1/coupons', stripe.auth.requireAdmin, this.createCoupon);
-  stripe.server.get('/v1/coupons/:coupon', this.retrieveCoupon);
-  stripe.server.post('/v1/coupons/:coupon', stripe.auth.requireAdmin, this.updateCoupon);
-  stripe.server.del('/v1/coupons/:coupon', stripe.auth.requireAdmin, this.deleteCoupon);
-  stripe.server.get('/v1/coupons', this.listAllCoupons);
+  mock.api.post('/v1/coupons', stripe.auth.requireAdmin, this.createCoupon);
+  mock.api.get('/v1/coupons/:coupon', this.retrieveCoupon);
+  mock.api.post('/v1/coupons/:coupon', stripe.auth.requireAdmin, this.updateCoupon);
+  mock.api.del('/v1/coupons/:coupon', stripe.auth.requireAdmin, this.deleteCoupon);
+  mock.api.get('/v1/coupons', this.listAllCoupons);
 
   ////////////////////
 }
 
-module.exports = (stripe) => new Coupons(stripe);
+module.exports = (mock, stripe) => new Coupons(mock, stripe);

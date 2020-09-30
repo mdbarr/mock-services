@@ -1,6 +1,6 @@
 'use strict';
 
-function InvoiceItems (stripe) {
+function InvoiceItems (mock, stripe) {
   this.createInvoiceItem = (req, res, next) => {
     const context = stripe.model.context(req, res, next);
     const customer = stripe.store.getCustomer(context.identity, req.body.customer);
@@ -65,7 +65,7 @@ function InvoiceItems (stripe) {
     }
 
     const fields = [ 'amount', 'description', 'discountable', 'metadata' ];
-    const [ update, previous ] = stripe.util.createUpdateObject(fields, invoiceItem, req.body);
+    const [ update, previous ] = stripe.createUpdateObject(fields, invoiceItem, req.body);
 
     invoiceItem = stripe.store.updateInvoiceItem(context.identity, req.params.invoiceItem, update);
 
@@ -125,13 +125,13 @@ function InvoiceItems (stripe) {
 
   ////////////////////
 
-  stripe.server.post('/v1/invoiceitems', stripe.auth.requireAdmin, this.createInvoiceItem);
-  stripe.server.get('/v1/invoiceitems/:invoiceItem', stripe.auth.requireAdmin, this.retrieveInvoiceItem);
-  stripe.server.post('/v1/invoiceitems/:invoiceItem', stripe.auth.requireAdmin, this.updateInvoiceItem);
-  stripe.server.del('/v1/invoiceitems/:invoiceItem', stripe.auth.requireAdmin, this.deleteInvoiceItem);
-  stripe.server.get('/v1/invoiceitems', stripe.auth.requireAdmin, this.listAllInvoiceItems);
+  mock.api.post('/v1/invoiceitems', stripe.auth.requireAdmin, this.createInvoiceItem);
+  mock.api.get('/v1/invoiceitems/:invoiceItem', stripe.auth.requireAdmin, this.retrieveInvoiceItem);
+  mock.api.post('/v1/invoiceitems/:invoiceItem', stripe.auth.requireAdmin, this.updateInvoiceItem);
+  mock.api.del('/v1/invoiceitems/:invoiceItem', stripe.auth.requireAdmin, this.deleteInvoiceItem);
+  mock.api.get('/v1/invoiceitems', stripe.auth.requireAdmin, this.listAllInvoiceItems);
 
   ////////////////////
 }
 
-module.exports = (stripe) => new InvoiceItems(stripe);
+module.exports = (mock, stripe) => new InvoiceItems(mock, stripe);

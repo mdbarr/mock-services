@@ -4,7 +4,7 @@ const async = require('async');
 const crypto = require('crypto');
 const request = require('request');
 
-function Webhooks (stripe) {
+function Webhooks (mock, stripe) {
   this.computeSignature = (payload, secret) => crypto.createHmac('sha256', secret).
     update(payload).
     digest('hex');
@@ -14,7 +14,7 @@ function Webhooks (stripe) {
 
     event.pending_webhooks--;
 
-    const timestamp = stripe.util.timestamp();
+    const timestamp = mock.utils.timestamp();
     const payload = JSON.stringify(event);
     const signature = this.computeSignature(`${ timestamp }.${ payload }`,
       webhook.sharedSecret);
@@ -27,10 +27,10 @@ function Webhooks (stripe) {
       url: webhook.url,
     }, (error, response) => {
       if (!stripe.options.silent) {
-        console.log('%s [%s/%s]: %s', stripe.util.colorize('blue', 'WEBHOOK'), response.statusCode, event.type, error || event.id);
+        console.log('%s [%s/%s]: %s', mock.utils.colorize('blue', 'WEBHOOK'), response.statusCode, event.type, error || event.id);
       }
 
-      event.webhooks_delivered_at = stripe.util.timestamp();
+      event.webhooks_delivered_at = mock.utils.timestamp();
 
       if (stripe.options.webhooks.delay) {
         return setTimeout(() => next(), stripe.options.webhooks.delay);
@@ -67,4 +67,4 @@ function Webhooks (stripe) {
   };
 }
 
-module.exports = (stripe) => new Webhooks(stripe);
+module.exports = (mock, stripe) => new Webhooks(mock, stripe);

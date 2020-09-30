@@ -1,15 +1,15 @@
 'use strict';
 
-function Invoices (stripe) {
+function Invoices (mock, stripe) {
   this.populatePlan = (identity, invoiceItem) => {
-    invoiceItem = stripe.util.clone(invoiceItem);
+    invoiceItem = mock.utils.clone(invoiceItem);
     invoiceItem.plan = stripe.store.getPlan(identity, invoiceItem.plan);
 
     return invoiceItem;
   };
 
   this.populateInvoice = (identity, invoice) => {
-    invoice = stripe.util.clone(invoice);
+    invoice = mock.utils.clone(invoice);
     for (const lineItem of invoice.lines.data) {
       if (lineItem.plan) {
         lineItem.plan = stripe.store.getPlan(identity, lineItem.plan);
@@ -24,7 +24,7 @@ function Invoices (stripe) {
   this.createProration = function({
     context, item, customer, subscription,
   }) {
-    const percent = stripe.util.calculateProrationPercent(subscription.current_period_start,
+    const percent = stripe.calculateProrationPercent(subscription.current_period_start,
       subscription.current_period_end);
 
     if (item.deleted) {
@@ -266,7 +266,7 @@ function Invoices (stripe) {
       invoices = stripe.store.getInvoices(context.identity);
     }
 
-    invoices = stripe.util.clone(invoices);
+    invoices = mock.utils.clone(invoices);
     invoices = invoices.map((invoice) => this.populateInvoice(context.identity, invoice));
 
     const results = stripe.model.list({
@@ -342,13 +342,13 @@ function Invoices (stripe) {
 
   ////////////////////
 
-  stripe.server.get('/v1/invoices/upcoming', stripe.auth.requireAdmin, this.retrieveUpcomingInvoice);
-  stripe.server.post('/v1/invoices', stripe.auth.requireAdmin, this.createInvoice);
-  stripe.server.get('/v1/invoices/:invoice', stripe.auth.requireAdmin, this.retrieveInvoice);
-  stripe.server.post('/v1/invoices/:invoice/pay', stripe.auth.requireAdmin, this.payInvoice);
-  stripe.server.get('/v1/invoices', stripe.auth.requireAdmin, this.listAllInvoices);
+  mock.api.get('/v1/invoices/upcoming', stripe.auth.requireAdmin, this.retrieveUpcomingInvoice);
+  mock.api.post('/v1/invoices', stripe.auth.requireAdmin, this.createInvoice);
+  mock.api.get('/v1/invoices/:invoice', stripe.auth.requireAdmin, this.retrieveInvoice);
+  mock.api.post('/v1/invoices/:invoice/pay', stripe.auth.requireAdmin, this.payInvoice);
+  mock.api.get('/v1/invoices', stripe.auth.requireAdmin, this.listAllInvoices);
 
   ////////////////////
 }
 
-module.exports = (stripe) => new Invoices(stripe);
+module.exports = (mock, stripe) => new Invoices(mock, stripe);
