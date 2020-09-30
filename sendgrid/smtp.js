@@ -3,16 +3,14 @@
 const SMTPServer = require('smtp-server').SMTPServer;
 const simpleParser = require('mailparser').simpleParser;
 
-function SMTP (sendgrid) {
-  const self = this;
-
+function SMTP (mock, sendgrid) {
   //////////////////////////////////////////////////
 
-  self.connect = function(session, callback) {
+  this.connect = (session, callback) => {
     callback(null);
   };
 
-  self.auth = function(auth, session, callback) {
+  this.auth = (auth, session, callback) => {
     for (const user of sendgrid.store.getUsers()) {
       if (auth.username === user.username) {
         if (!user.password || auth.password === user.password) {
@@ -24,15 +22,15 @@ function SMTP (sendgrid) {
     return callback(new Error('Invalid username or password'));
   };
 
-  self.mailFrom = function(address, session, callback) {
+  this.mailFrom = (address, session, callback) => {
     callback(null);
   };
 
-  self.rcptTo = function(address, session, callback) {
+  this.rcptTo = (address, session, callback) => {
     callback(null);
   };
 
-  self.message = function(session, message, callback) {
+  this.message = (session, message, callback) => {
     sendgrid.messages.message({
       user: session.user.name,
       ip: session.remoteAddress,
@@ -50,38 +48,34 @@ function SMTP (sendgrid) {
     callback(null);
   };
 
-  self.data = function(stream, session, callback) {
+  this.data = (stream, session, callback) => {
     simpleParser(stream, (err, message) => {
       if (err) {
         return callback(err);
       }
-      return self.message(session, message, callback);
+      return this.message(session, message, callback);
     });
   };
 
   //////////////////////////////////////////////////
 
   sendgrid.smtpServer = new SMTPServer({
-    name: `${ sendgrid.options.name } SMTP Server`,
+    name: `${ sendgrid.config.name } SMTP Server`,
     authOptional: sendgrid.config.allowUnauthorized,
     allowInsecureAuth: true,
     disableReverseLookup: true,
-    onAuth: self.auth,
-    onConnect: self.connect,
-    onMailFrom: self.mailFrom,
-    onRcptTo: self.rcptTo,
-    onData: self.data,
+    onAuth: this.auth,
+    onConnect: this.connect,
+    onMailFrom: this.mailFrom,
+    onRcptTo: this.rcptTo,
+    onData: this.data,
   });
 
-  self.boot = function() {
+  this.boot = () => {
     sendgrid.smtpServer.listen(sendgrid.config.smtpPort, () => {
       console.log(`Mock Sendgrid SMTP Server running on ${ sendgrid.config.smtpPort }`);
     });
   };
-
-  return self;
 }
 
-module.exports = function(sendgrid) {
-  return new SMTP(sendgrid);
-};
+module.exports = (mock, sendgrid) => new SMTP(mock, sendgrid);

@@ -1,72 +1,29 @@
 'use strict';
 
-function SendgridServer (options, config) {
-  const sendgrid = this;
+function Sendgrid (mock) {
+  this.config = mock.config.sendgrid;
 
-  sendgrid.version = require('../package.json').version;
+  this.store = require('./dataStore')(mock, this);
 
-  sendgrid.config = {
-    smtpPort: 5870,
-    apiPort: 5871,
-    allowUnauthorized: true,
-    behaviors: {
-      reject: '+should+reject+',
-      drop: '+should+drop+',
-      bounce: '+should+bounce+',
-      defer: '+should+defer+',
-      open: '+should+open+',
-      click: '+should+click+',
-      unsubscribe: '+should+unsubscribe+',
-      spam: '+should+spam+',
-    },
-    webhooks: {
-      delay: 250,
-      concurrency: 1,
-    },
-  };
+  //////////
 
-  sendgrid.options = {
-    name: 'mock-sendgrid-server',
-    host: '0.0.0.0',
-    silent: false,
-  };
+  this.webhooks = require('./webhooks')(mock, this);
+  this.pipeline = require('./pipeline')(mock, this);
+  this.passthrough = require('./passthrough')(mock, this);
+  this.messages = require('./messages')(mock, this);
 
-  sendgrid.util = require('./util');
+  this.smtp = require('./smtp')(mock, this);
+  this.api = require('./api')(mock, this);
 
-  sendgrid.store = require('./dataStore')(sendgrid);
+  //////////
 
-  //////////////////////////////////////////////////
-
-  if (options) {
-    Object.assign(sendgrid.options, options);
-  }
-
-  if (config) {
-    Object.assign(sendgrid.config, config);
-
-    if (sendgrid.config.users) {
-      sendgrid.store.addUsers(sendgrid.config.users);
+  this.start = (callback) => {
+    if (this.config.users) {
+      this.store.addUsers(this.config.users);
     }
-  }
 
-  //////////////////////////////////////////////////
-
-  sendgrid.webhooks = require('./webhooks')(sendgrid);
-  sendgrid.pipeline = require('./pipeline')(sendgrid);
-  sendgrid.passthrough = require('./passthrough')(sendgrid);
-  sendgrid.messages = require('./messages')(sendgrid);
-
-  sendgrid.smtp = require('./smtp')(sendgrid);
-  sendgrid.api = require('./api')(sendgrid);
-
-  //////////////////////////////////////////////////
-
-  sendgrid.boot = function() {
-    sendgrid.smtp.boot();
-    sendgrid.api.boot();
+    this.smtp.start(callback);
   };
-
-  return sendgrid;
 }
 
-module.exports = (mock) => new SendgridServer(mock);
+module.exports = (mock) => new Sendgrid(mock);

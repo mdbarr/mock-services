@@ -1,10 +1,8 @@
 'use strict';
 
-function DataStore (sendgrid) {
-  const self = this;
-
+function DataStore (mock, sendgrid) {
   const store = {
-    prefix: sendgrid.util.generateAlphaNumeric(6),
+    prefix: mock.utils.generateAlphaNumeric(6),
 
     users: [],
     webhooks: {},
@@ -15,8 +13,8 @@ function DataStore (sendgrid) {
     counter: 0,
   };
 
-  self.clear = function() {
-    store.prefix = sendgrid.util.generateAlphaNumeric(6);
+  this.clear = () => {
+    store.prefix = mock.utils.generateAlphaNumeric(6);
     store.users = [];
     store.webhooks = {};
     store.messages = {};
@@ -24,23 +22,23 @@ function DataStore (sendgrid) {
     store.counter = 0;
 
     if (sendgrid.config.users) {
-      self.addUsers(sendgrid.config.users);
+      this.addUsers(sendgrid.config.users);
     }
   };
 
-  self.generateId = function(length) {
+  this.generateId = (length) => {
     const id = (store.counter++).toString(16);
     return `${ store.prefix }${ '0'.repeat(length - (id.length + store.prefix.length)) }${ id }`;
   };
 
-  self.ensureArray = function(map, property) {
+  this.ensureArray = (map, property) => {
     if (!Array.isArray(map[property])) {
       map[property] = [];
     }
     return map[property];
   };
 
-  self.addUser = function(user) {
+  this.addUser = (user) => {
     user.name = user.name || user.username;
 
     if (user.webhooks) {
@@ -50,64 +48,48 @@ function DataStore (sendgrid) {
     return store.users.push(user);
   };
 
-  self.addUsers = function(users) {
+  this.addUsers = (users) => {
     users.forEach((user) => {
       user.webhooks = user.webhooks || [];
 
       console.log('  Adding user %s with %d webhooks, passthrough %s.',
-        sendgrid.util.colorize('cyan', user.name),
+        mock.utils.colorize('cyan', user.name),
         user.webhooks.length,
         user.passthrough ? 'enabled' : 'disabled');
-      self.addUser(user);
+      this.addUser(user);
     });
   };
 
-  self.getUsers = function() {
-    return store.users;
-  };
+  this.getUsers = () => store.users;
 
-  self.getWebhooks = function(user) {
-    return self.ensureArray(store.webhooks, user);
-  };
+  this.getWebhooks = (user) => this.ensureArray(store.webhooks, user);
 
-  self.addMessage = function(to, message) {
+  this.addMessage = (to, message) => {
     store.index[message.id] = message;
-    return self.ensureArray(store.messages, to).push(message).length;
+    return this.ensureArray(store.messages, to).push(message).length;
   };
 
-  self.getMessage = function(to, index) {
-    self.ensureArray(store.messages, to);
+  this.getMessage = (to, index) => {
+    this.ensureArray(store.messages, to);
 
     index = index !== undefined ? index : store.messages[to].length - 1;
 
     return store.messages[to][index];
   };
 
-  self.getMessageById = function(id) {
-    return store.index[id];
-  };
+  this.getMessageById = (id) => store.index[id];
 
-  self.getMessages = function(to) {
-    return self.ensureArray(store.messages, to);
-  };
+  this.getMessages = (to) => this.ensureArray(store.messages, to);
 
-  self.getMessageStore = function() {
-    return store.messages;
-  };
+  this.getMessageStore = () => store.messages;
 
-  self.popMessage = function(to) {
-    return self.ensureArray(store.messages, to).shift();
-  };
+  this.popMessage = (to) => this.ensureArray(store.messages, to).shift();
 
-  self.popMessages = function(to) {
-    const messages = self.ensureArray(store.messages, to);
+  this.popMessages = (to) => {
+    const messages = this.ensureArray(store.messages, to);
     store.messsages[to] = [];
     return messages;
   };
-
-  return self;
 }
 
-module.exports = function(sendgrid) {
-  return new DataStore(sendgrid);
-};
+module.exports = (mock, sendgrid) => new DataStore(mock, sendgrid);

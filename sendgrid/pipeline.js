@@ -1,9 +1,7 @@
 'use strict';
 
-function Pipeline (sendgrid) {
-  const self = this;
-
-  function stateTransition (message, newState) {
+function Pipeline (mock, sendgrid) {
+  this.stateTransition = (message, newState) => {
     if (!sendgrid.options.silent) {
       console.log('STATE TRANSITION %s [%s -> %s]', message.id, message.state, newState);
     }
@@ -12,34 +10,34 @@ function Pipeline (sendgrid) {
 
     sendgrid.webhooks.triggerEvent(message);
 
-    return self.processMessage(message);
-  }
+    return this.processMessage(message);
+  };
 
-  self.processMessage = function(message) {
+  this.processMessage = (message) => {
     switch (message.state) {
       case sendgrid.messages.states.RECEIVED:
         if (message.to.includes(sendgrid.config.behaviors.drop)) {
-          return stateTransition(message, sendgrid.messages.states.DROPPED);
+          return this.stateTransition(message, sendgrid.messages.states.DROPPED);
         }
-        return stateTransition(message, sendgrid.messages.states.PROCESSED);
+        return this.stateTransition(message, sendgrid.messages.states.PROCESSED);
 
       case sendgrid.messages.states.PROCESSED:
         if (message.to.includes(sendgrid.config.behaviors.bounce)) {
-          return stateTransition(message, sendgrid.messages.states.BOUNCE);
+          return this.stateTransition(message, sendgrid.messages.states.BOUNCE);
         } else if (message.to.includes(sendgrid.config.behaviors.defer)) {
-          return stateTransition(message, sendgrid.messages.states.DEFERRED);
+          return this.stateTransition(message, sendgrid.messages.states.DEFERRED);
         }
-        return stateTransition(message, sendgrid.messages.states.DELIVERED);
+        return this.stateTransition(message, sendgrid.messages.states.DELIVERED);
 
       case sendgrid.messages.states.DELIVERED:
         if (message.to.includes(sendgrid.config.behaviors.open)) {
-          return stateTransition(message, sendgrid.messages.states.OPEN);
+          return this.stateTransition(message, sendgrid.messages.states.OPEN);
         } else if (message.to.includes(sendgrid.config.behaviors.click)) {
-          return stateTransition(message, sendgrid.messages.states.CLICK);
+          return this.stateTransition(message, sendgrid.messages.states.CLICK);
         } else if (message.to.includes(sendgrid.config.behaviors.unsubscribe)) {
-          return stateTransition(message, sendgrid.messages.states.UNSUBSCRIBE);
+          return this.stateTransition(message, sendgrid.messages.states.UNSUBSCRIBE);
         } else if (message.to.includes(sendgrid.config.behaviors.spam)) {
-          return stateTransition(message, sendgrid.messages.states.spam);
+          return this.stateTransition(message, sendgrid.messages.states.spam);
         }
         return message;
 
@@ -47,10 +45,6 @@ function Pipeline (sendgrid) {
         return message;
     }
   };
-
-  return self;
 }
 
-module.exports = function(sendgrid) {
-  return new Pipeline(sendgrid);
-};
+module.exports = (mock, sendgrid) => new Pipeline(mock, sendgrid);

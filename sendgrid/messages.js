@@ -14,12 +14,10 @@ const MESSAGE_STATES = {
   SPAM: 'spamreport',
 };
 
-function Messages (sendgrid) {
-  const self = this;
+function Messages (mock, sendgrid) {
+  this.states = MESSAGE_STATES;
 
-  self.states = MESSAGE_STATES;
-
-  self.message = function({
+  this.message = function({
     user, ip, tls, to, toName, from, fromName,
     subject, body, messageId, timestamp, passthrough,
   }) {
@@ -37,7 +35,7 @@ function Messages (sendgrid) {
       subject: subject || null,
       body: body || null,
       messageId: messageId || `<${ id }.${ from }>`,
-      timestamp: timestamp || sendgrid.util.timestamp(),
+      timestamp: timestamp || mock.utils.timestamp(),
       read: false,
       deleted: false,
     };
@@ -48,10 +46,6 @@ function Messages (sendgrid) {
 
     return message;
   };
-
-  return self;
 }
 
-module.exports = function(sendgrid) {
-  return new Messages(sendgrid);
-};
+module.exports = (mock, sendgrid) => new Messages(mock, sendgrid);

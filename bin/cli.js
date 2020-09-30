@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 'use strict';
 
+require('barrkeep/pp');
 const fs = require('fs');
 const { argv: options } = require('yargs');
 const MockServices = require('../lib/mockServices');

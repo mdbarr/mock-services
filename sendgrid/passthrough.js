@@ -2,10 +2,8 @@
 
 const mailer = require('nodemailer');
 
-function Passthrough (sendgrid) {
-  const self = this;
-
-  self.initTransport = function(passthrough) {
+function Passthrough (mock) {
+  this.initTransport = (passthrough) => {
     passthrough.transport = mailer.createTransport({
       host: passthrough.host || 'smtp.sendgrid.net',
       port: passthrough.port || 587,
@@ -17,13 +15,13 @@ function Passthrough (sendgrid) {
     });
   };
 
-  self.pass = function(message, passthrough) {
+  this.pass = (message, passthrough) => {
     if (!passthrough) {
       return false;
     }
 
     if (!passthrough.transport) {
-      self.initTransport(passthrough);
+      this.initTransport(passthrough);
     }
 
     if (Array.isArray(passthrough.whitelist) && passthrough.whitelist.length) {
@@ -35,7 +33,7 @@ function Passthrough (sendgrid) {
         }
       }
       if (!found) {
-        console.log('%s %s %s (%s)', sendgrid.util.colorize('yellow', 'PASSTHROUGH REJECTED'),
+        console.log('%s %s %s (%s)', mock.utils.colorize('yellow', 'PASSTHROUGH REJECTED'),
           message.id, message.to, 'whitelist');
         return false;
       }
@@ -44,7 +42,7 @@ function Passthrough (sendgrid) {
     if (Array.isArray(passthrough.blacklist)) {
       for (const item of passthrough.blacklist) {
         if (message.to.includes(item)) {
-          console.log('%s %s %s (%s)', sendgrid.util.colorize('yellow', 'PASSTHROUGH REJECTED'),
+          console.log('%s %s %s (%s)', mock.utils.colorize('yellow', 'PASSTHROUGH REJECTED'),
             message.id, message.to, 'blacklist');
           return false;
         }
@@ -59,16 +57,12 @@ function Passthrough (sendgrid) {
     };
 
     passthrough.transport.sendMail(options, (error, info) => {
-      console.log('%s %s %s %s', sendgrid.util.colorize('yellow', 'PASSTHROUGH SENT'),
+      console.log('%s %s %s %s', mock.utils.colorize('yellow', 'PASSTHROUGH SENT'),
         message.id, options.to, error ? error : info.response);
     });
 
     return true;
   };
-
-  return self;
 }
 
-module.exports = function(sendgrid) {
-  return new Passthrough(sendgrid);
-};
+module.exports = (mock) => new Passthrough(mock);

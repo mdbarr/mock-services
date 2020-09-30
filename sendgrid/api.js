@@ -1,38 +1,7 @@
 'use strict';
 
-const restify = require('restify');
-const corsMiddleware = require('restify-cors-middleware');
-
-function API (sendgrid) {
-  const self = this;
-
-  sendgrid.apiServer = restify.createServer({
-    ignoreTrailingSlash: true,
-    name: `${ sendgrid.options.name } API Server`,
-    strictNext: true,
-  });
-
-  //////////
-
-  this.cors = corsMiddleware({
-    origins: [ '*' ],
-    allowHeaders: [ 'Authorization' ],
-    exposeHeaders: [ 'Authorization' ],
-  });
-
-  sendgrid.apiServer.pre(this.cors.preflight);
-  sendgrid.apiServer.use(this.cors.actual);
-
-  //////////
-
-  sendgrid.apiServer.use(restify.pre.sanitizePath());
-  sendgrid.apiServer.use(restify.plugins.bodyParser());
-  sendgrid.apiServer.pre(restify.plugins.pre.dedupeSlashes());
-  sendgrid.apiServer.use(restify.plugins.dateParser());
-  sendgrid.apiServer.use(restify.plugins.queryParser());
-  sendgrid.apiServer.use(restify.plugins.authorizationParser());
-
-  sendgrid.apiServer.use((req, res, next) => {
+function API (mock, sendgrid) {
+  sendgrid.req = (req, res, next) => {
     const requestId = `req_${ sendgrid.store.generateId(24) }`;
     req.requestId = requestId;
 
@@ -40,15 +9,15 @@ function API (sendgrid) {
     res.header(`${ sendgrid.options.name }-version`, sendgrid.version);
 
     if (!sendgrid.options.silent) {
-      sendgrid.util.logger(req);
+      mock.utils.logger(req);
     }
     return next();
-  });
+  };
 
   //////////////////////////////////////////////////
   // V2 API
 
-  sendgrid.apiServer.post('/api/mail.send.json', (req, res, next) => {
+  mock.api.post('/api/mail.send.json', sendgrid.req, sendgrid.req, sendgrid.req, (req, res, next) => {
     if (!req.body.api_user || !req.body.api_key ||
         !req.body.to || !req.body.subject || !req.body.from) {
       res.send(400, { message: 'missing required fields' });
@@ -93,7 +62,7 @@ function API (sendgrid) {
   //////////////////////////////////////////////////
   // Interaction API
 
-  sendgrid.apiServer.get('/api/users', (req, res, next) => {
+  mock.api.get('/api/users', sendgrid.req, sendgrid.req, sendgrid.req, (req, res, next) => {
     const response = {
       items: [],
       count: 0,
@@ -109,13 +78,13 @@ function API (sendgrid) {
     }
 
     res.send(200, response);
-    next();
+    return next();
   });
 
-  sendgrid.apiServer.get('/api/messages/:to', (req, res, next) => {
-    const all = sendgrid.util.toBoolean(req.query.all);
-    const full = sendgrid.util.toBoolean(req.query.full);
-    const read = sendgrid.util.toBoolean(req.query.read);
+  mock.api.get('/api/messages/:to', sendgrid.req, sendgrid.req, sendgrid.req, (req, res, next) => {
+    const all = mock.utils.toBoolean(req.query.all);
+    const full = mock.utils.toBoolean(req.query.full);
+    const read = mock.utils.toBoolean(req.query.read);
 
     const messages = sendgrid.store.getMessages(req.params.to).
       filter((item) => {
@@ -148,10 +117,10 @@ function API (sendgrid) {
     };
 
     res.send(200, response);
-    next();
+    return next();
   });
 
-  sendgrid.apiServer.get('/api/messages/:to/:index', (req, res, next) => {
+  mock.api.get('/api/messages/:to/:index', sendgrid.req, sendgrid.req, sendgrid.req, (req, res, next) => {
     const message = sendgrid.store.getMessages(req.params.to)[req.params.index];
     if (message) {
       message.read = true;
@@ -159,51 +128,47 @@ function API (sendgrid) {
     } else {
       res.send(404, { message: 'message not found' });
     }
-    next();
+    return next();
   });
 
-  sendgrid.apiServer.get('/api/message/:id', (req, res, next) => {
+  mock.api.get('/api/message/:id', sendgrid.req, sendgrid.req, sendgrid.req, (req, res, next) => {
     const message = sendgrid.store.getMessageById(req.params.id);
     if (!message) {
       res.send(404, { message: 'message not found' });
     } else {
       res.send(200, message);
     }
-    next();
+    return next();
   });
 
   //////////////////////////////////////////////////
   // Data Store API
 
-  sendgrid.apiServer.get('/api/admin/messages', (req, res, next) => {
+  mock.api.get('/api/admin/messages', sendgrid.req, sendgrid.req, sendgrid.req, (req, res, next) => {
     const store = sendgrid.store.getMessageStore();
     res.sendRaw(200, JSON.stringify(store, null, 2));
-    next();
+    return next();
   });
 
-  sendgrid.apiServer.get('/data/store', (req, res, next) => {
+  mock.api.get('/data/store', sendgrid.req, sendgrid.req, sendgrid.req, (req, res, next) => {
     const store = sendgrid.store.getMessageStore();
     res.sendRaw(200, JSON.stringify(store, null, 2));
-    next();
+    return next();
   });
 
-  sendgrid.apiServer.post('/data/store/clear', (req, res, next) => {
+  mock.api.post('/data/store/clear', sendgrid.req, sendgrid.req, sendgrid.req, (req, res, next) => {
     sendgrid.store.clear();
     res.send(200, { message: 'datastore cleared' });
-    next();
+    return next();
   });
 
   //////////////////////////////////////////////////
 
-  self.boot = function() {
-    sendgrid.apiServer.listen(sendgrid.config.apiPort, () => {
+  this.boot = () => {
+    mock.api.listen(sendgrid.config.apiPort, sendgrid.req, sendgrid.req, sendgrid.req, () => {
       console.log(`Mock Sendgrid API Server running on ${ sendgrid.config.apiPort }`);
     });
   };
-
-  return self;
 }
 
-module.exports = function(sendgrid) {
-  return new API(sendgrid);
-};
+module.exports = (mock, sendgrid) => new API(mock, sendgrid);
