@@ -69,4 +69,4 @@ function SendgridServer (options, config) {
   return sendgrid;
 }
 
-module.exports = SendgridServer;
+module.exports = (mock) => new SendgridServer(mock);

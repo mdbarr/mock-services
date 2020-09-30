@@ -3,8 +3,6 @@
 const url = require('url');
 
 function StripeServer (mock) {
-  this.config = mock.config.stripe;
-
   this.version = require('../package.json').version;
 
   this.options = {
@@ -139,12 +137,12 @@ function StripeServer (mock) {
 
   //////////
 
-  this.data = require('../data');
+  this.data = require('./data');
 
-  this.store = require('./dataStore')(this);
-  this.ui = require('./ui')(this);
+  this.store = require('./dataStore')(mock, this);
+  this.ui = require('./ui')(mock, this);
 
-  this.server.use((req, res, next) => {
+  this.req = (req, res, next) => {
     const requestId = `req_${ this.store.generateId(24) }`;
     req.requestId = requestId;
 
@@ -156,7 +154,7 @@ function StripeServer (mock) {
       this.util.logger(req);
     }
     return next();
-  });
+  };
 
   ////////////////////
 
@@ -188,4 +186,4 @@ function StripeServer (mock) {
   };
 }
 
-module.exports = StripeServer;
+module.exports = (mock) => new StripeServer(mock);
