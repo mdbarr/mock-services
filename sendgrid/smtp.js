@@ -71,9 +71,14 @@ function SMTP (mock, sendgrid) {
     onData: this.data,
   });
 
-  this.boot = () => {
-    sendgrid.smtpServer.listen(sendgrid.config.smtpPort, () => {
+  this.start = (callback) => {
+    sendgrid.smtpServer.listen(sendgrid.config.smtpPort, (error) => {
+      if (error) {
+        return callback(error);
+      }
       console.log(`Mock Sendgrid SMTP Server running on ${ sendgrid.config.smtpPort }`);
+
+      return callback();
     });
   };
 }

@@ -18,14 +18,12 @@
     "yargs": "^16.0.3"
   },
   "devDependencies": {
-    "eslint": "^7.5.0",
-    "jest": "^26.1.0",
-    "stripe": "^8.79.0"
+    "eslint": "^7.5.0"
   },
   "scripts": {
-    "build": "docker build --pull -t mock-sendgrid .",
+    "build": "docker build --pull -t mock-services .",
     "lint": "eslint *.js bin lib stripe sendgrid",
-    "run:docker": "docker run -d --rm --name mock-sendgrid -p 5870:5870 -p 5871:5871 mock-sendgrid:latest",
+    "run:docker": "docker run -d --rm --name mock-services -p 5775:5775 -p 5870:5870 mock-services:latest",
     "start": "forever --minUptime=1000 --spinSleepTime=500 ./cli.js"
   }
 }

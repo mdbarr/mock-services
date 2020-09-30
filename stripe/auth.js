@@ -66,8 +66,6 @@ function Auth (mock, stripe) {
     }
     return next();
   };
-
-  mock.api.use(this.validateApiKey);
 }
 
 module.exports = (mock, stripe) => new Auth(mock, stripe);

@@ -22,13 +22,13 @@ function UI (mock, stripe) {
 
   ////////////////////
 
-  mock.api.get('/ui/orgs', stripe.req, (req, res, next) => {
+  mock.api.get('/ui/orgs', (req, res, next) => {
     const response = [ 'default', ...Object.keys(stripe.store.getKeys()) ];
     res.send(200, response);
     return next();
   });
 
-  mock.api.get('/ui/organizations', stripe.req, (req, res, next) => {
+  mock.api.get('/ui/organizations', (req, res, next) => {
     const keys = stripe.store.getKeys();
     const keyList = Object.keys(keys).map((item) => Object.assign({ id: item }, keys[item]));
 
@@ -46,7 +46,7 @@ function UI (mock, stripe) {
     return next();
   });
 
-  mock.api.get('/ui/plans/:organization', stripe.req, (req, res, next) => {
+  mock.api.get('/ui/plans/:organization', (req, res, next) => {
     const fields = [ 'id', 'name', 'amount', 'interval', 'created' ];
     const items = stripe.store.getPlans(req.params.organization).map((value) => {
       const item = {};
@@ -60,7 +60,7 @@ function UI (mock, stripe) {
     return next();
   });
 
-  mock.api.get('/ui/coupons/:organization', stripe.req, (req, res, next) => {
+  mock.api.get('/ui/coupons/:organization', (req, res, next) => {
     const fields = [ 'id', 'amount_off', 'percent_off', 'duration', 'created' ];
     const items = stripe.store.getCoupons(req.params.organization).map((value) => {
       const item = {};
@@ -74,7 +74,7 @@ function UI (mock, stripe) {
     return next();
   });
 
-  mock.api.get('/ui/tokens/:organization', stripe.req, (req, res, next) => {
+  mock.api.get('/ui/tokens/:organization', (req, res, next) => {
     const fields = [ 'id', 'card', 'used', 'created' ];
     const items = stripe.store.getTokens(req.params.organization).map((value) => {
       const item = {};
@@ -88,7 +88,7 @@ function UI (mock, stripe) {
     return next();
   });
 
-  mock.api.get('/ui/cards/:organization', stripe.req, (req, res, next) => {
+  mock.api.get('/ui/cards/:organization', (req, res, next) => {
     const fields = [ 'id', 'customer', 'last4', 'brand' ];
     const items = stripe.store.getCards(req.params.organization).map((value) => {
       const item = {};
@@ -102,7 +102,7 @@ function UI (mock, stripe) {
     return next();
   });
 
-  mock.api.get('/ui/customers/:organization', stripe.req, (req, res, next) => {
+  mock.api.get('/ui/customers/:organization', (req, res, next) => {
     const fields = [ 'id', 'description', 'account_balance', 'email', 'created' ];
     const items = stripe.store.getCustomers(req.params.organization).map((value) => {
       const item = {};
@@ -116,7 +116,7 @@ function UI (mock, stripe) {
     return next();
   });
 
-  mock.api.get('/ui/subscriptions/:organization', stripe.req, (req, res, next) => {
+  mock.api.get('/ui/subscriptions/:organization', (req, res, next) => {
     const fields = [
       'id', 'customer', 'plan', 'quantity', 'current_period_start',
       'current_period_end', 'created',
@@ -133,7 +133,7 @@ function UI (mock, stripe) {
     return next();
   });
 
-  mock.api.get('/ui/invoices/:organization', stripe.req, (req, res, next) => {
+  mock.api.get('/ui/invoices/:organization', (req, res, next) => {
     const fields = [
       'id', 'customer', 'subscription',
       'charge', 'total', 'paid', 'date',
@@ -150,7 +150,7 @@ function UI (mock, stripe) {
     return next();
   });
 
-  mock.api.get('/ui/charges/:organization', stripe.req, (req, res, next) => {
+  mock.api.get('/ui/charges/:organization', (req, res, next) => {
     const fields = [ 'id', 'customer', 'invoice', 'source', 'amount', 'paid', 'created' ];
     const items = stripe.store.getCharges(req.params.organization).map((value) => {
       const item = {};
@@ -164,7 +164,7 @@ function UI (mock, stripe) {
     return next();
   });
 
-  mock.api.get('/ui/events/:organization', stripe.req, (req, res, next) => {
+  mock.api.get('/ui/events/:organization', (req, res, next) => {
     const fields = [ 'id', 'type', 'created' ];
     const items = stripe.store.getEvents(req.params.organization).map((value) => {
       const item = {};
@@ -178,7 +178,7 @@ function UI (mock, stripe) {
     return next();
   });
 
-  mock.api.get('/ui/webhooks/:organization', stripe.req, (req, res, next) => {
+  mock.api.get('/ui/webhooks/:organization', (req, res, next) => {
     const fields = [ 'id', 'url', 'events', 'sharedSecret', 'created' ];
     const items = stripe.store.getWebhooks(req.params.organization).map((value) => {
       const item = {};
@@ -192,7 +192,7 @@ function UI (mock, stripe) {
     return next();
   });
 
-  mock.api.get('/ui/requests', stripe.req, (req, res, next) => {
+  mock.api.get('/ui/requests', (req, res, next) => {
     const requests = stripe.store.getRequests();
     const requestList = Object.keys(requests).map((item) => {
       item = requests[item];
@@ -213,7 +213,7 @@ function UI (mock, stripe) {
     return next();
   });
 
-  mock.api.get('/ui/:type/:organization/:id', stripe.req, (req, res, next) => {
+  mock.api.get('/ui/:type/:organization/:id', (req, res, next) => {
     let item = {};
     switch (req.params.type) {
       case 'plan':
@@ -257,14 +257,14 @@ function UI (mock, stripe) {
 
   ////////////////////
 
-  mock.api.get('/', stripe.req, restify.plugins.serveStatic({
-    directory: './ui',
-    file: 'index.html',
-  }));
-
-  mock.api.get('/[^/]+.(html|js|css|svg|ico|png)', stripe.req, restify.plugins.serveStatic({
+  mock.api.get('/*', restify.plugins.serveStatic({
     directory: './ui',
     default: 'index.html',
+  }));
+
+  mock.api.get('/', restify.plugins.serveStatic({
+    directory: './ui',
+    file: 'index.html',
   }));
 
   ////////////////////

@@ -2,7 +2,7 @@
 
 const url = require('url');
 
-function StripeServer (mock) {
+function Stripe (mock) {
   this.version = require('../package.json').version;
 
   this.options = {
@@ -146,9 +146,10 @@ function StripeServer (mock) {
     res.header('Stripe-Version', this.options.apiVersion);
 
     if (!this.options.silent) {
-      this.util.logger(req);
+      mock.utils.logger(req);
     }
-    return next();
+
+    return this.auth.validateApiKey(req, res, next);
   };
 
   ////////////////////
@@ -177,8 +178,8 @@ function StripeServer (mock) {
   ////////////////////
 
   this.start = (callback) => {
-    this.options.livemode = this.util.toBoolean(this.options.livemode);
-    this.options.silent = this.util.toBoolean(this.options.silent);
+    this.options.livemode = mock.utils.toBoolean(this.options.livemode);
+    this.options.silent = mock.utils.toBoolean(this.options.silent);
 
     this.store.loadStore();
     this.parseConfig(mock.config.stripe);
@@ -186,4 +187,4 @@ function StripeServer (mock) {
   };
 }
 
-module.exports = (mock) => new StripeServer(mock);
+module.exports = (mock) => new Stripe(mock);
