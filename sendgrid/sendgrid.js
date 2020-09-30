@@ -3,6 +3,8 @@
 function Sendgrid (mock) {
   this.config = mock.config.sendgrid;
 
+  this.log = mock.log.child({ service: 'sendgrid' });
+
   this.store = require('./dataStore')(mock, this);
 
   //////////

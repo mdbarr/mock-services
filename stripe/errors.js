@@ -19,7 +19,7 @@ function Errors (mock, stripe) {
     };
 
     if (!stripe.options.silent) {
-      console.log('%s [%s/%s]: %s', mock.utils.colorize('red', 'ERROR'), statusCode, type, message);
+      stripe.log.info('%s [%s/%s]: %s', mock.utils.colorize('red', 'ERROR'), statusCode, type, message);
     }
 
     context.send(statusCode, response);

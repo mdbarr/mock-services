@@ -8,9 +8,8 @@ function API (mock, sendgrid) {
     res.header('Request-Id', requestId);
     res.header(`${ sendgrid.options.name }-version`, sendgrid.version);
 
-    if (!sendgrid.options.silent) {
-      mock.utils.logger(req);
-    }
+    mock.log.req(req);
+
     return next();
   };
 

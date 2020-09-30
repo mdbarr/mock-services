@@ -5,6 +5,8 @@ const url = require('url');
 function Stripe (mock) {
   this.version = require('../package.json').version;
 
+  this.log = mock.log.child({ service: 'stripe' });
+
   this.options = {
     apiVersion: '2017-06-05',
     name: 'mock-stripe-server',
@@ -98,7 +100,7 @@ function Stripe (mock) {
         livemode: mock.utils.toBoolean(config.livemode),
       };
 
-      console.log(`Loading configuration for ${ mock.utils.colorize('bright blue', identity) } organization:`);
+      this.log.info(`Loading configuration for ${ mock.utils.colorize('bright blue', identity) } organization:`);
       this.store.addKey(identity, {
         secretKey: config.keys.secret,
         publishableKey: config.keys.publishable,
@@ -108,7 +110,7 @@ function Stripe (mock) {
         for (let plan of config.plans) {
           plan.context = context;
           const amount = `($${ plan.amount / 100 }/${ plan.interval })`;
-          console.log(`  Adding plan ${ mock.utils.colorize('bright green', plan.id) } ${ mock.utils.colorize('grey', amount) }`);
+          this.log.info(`  Adding plan ${ mock.utils.colorize('bright green', plan.id) } ${ mock.utils.colorize('grey', amount) }`);
           plan = this.model.plan(plan);
         }
       }
@@ -118,7 +120,7 @@ function Stripe (mock) {
           coupon.context = context;
           let amount = coupon.amount_off ? `$${ coupon.amount_off / 100 }` : `${ coupon.percent_off }%`;
           amount = `(${ amount } off)`;
-          console.log(`  Adding coupon ${ mock.utils.colorize('bright cyan', coupon.id) } ${ mock.utils.colorize('grey', amount) }`);
+          this.log.info(`  Adding coupon ${ mock.utils.colorize('bright cyan', coupon.id) } ${ mock.utils.colorize('grey', amount) }`);
           coupon = this.model.coupon(coupon);
         }
       }
@@ -128,7 +130,7 @@ function Stripe (mock) {
           webhook.context = context;
           const webhookUrl = url.parse(webhook.url);
           const webhookName = webhook.url.replace(webhookUrl.search, '');
-          console.log(`  Adding webhook ${ mock.utils.colorize('bright magenta', webhookName) }`);
+          this.log.info(`  Adding webhook ${ mock.utils.colorize('bright magenta', webhookName) }`);
           webhook = this.model.webhook(webhook);
         }
       }
@@ -145,9 +147,7 @@ function Stripe (mock) {
     res.header('mock-stripe-server-version', this.version);
     res.header('Stripe-Version', this.options.apiVersion);
 
-    if (!this.options.silent) {
-      mock.utils.logger(req);
-    }
+    mock.log.req(req);
 
     return this.auth.validateApiKey(req, res, next);
   };

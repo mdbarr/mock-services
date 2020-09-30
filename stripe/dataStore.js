@@ -38,7 +38,7 @@ function DataStore (mock, stripe) {
         Object.assign(store, fileStore);
       }
     } catch (error) {
-      console.log('Error loading datastore', error.stack);
+      stripe.log.info('Error loading datastore', error.stack);
     }
   };
 
@@ -48,7 +48,7 @@ function DataStore (mock, stripe) {
         fs.writeFileSync(stripe.options.store, JSON.stringify(store, null, 2));
       }
     } catch (error) {
-      console.log('Error writing datastore', error.stack);
+      stripe.log.info('Error writing datastore', error.stack);
     }
   };
 

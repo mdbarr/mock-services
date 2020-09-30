@@ -3,7 +3,7 @@
 function Pipeline (mock, sendgrid) {
   this.stateTransition = (message, newState) => {
     if (!sendgrid.options.silent) {
-      console.log('STATE TRANSITION %s [%s -> %s]', message.id, message.state, newState);
+      sendgrid.log.info('STATE TRANSITION %s [%s -> %s]', message.id, message.state, newState);
     }
 
     message.state = newState;

@@ -27,7 +27,7 @@ function Webhooks (mock, stripe) {
       url: webhook.url,
     }, (error, response) => {
       if (!stripe.options.silent) {
-        console.log('%s [%s/%s]: %s', mock.utils.colorize('blue', 'WEBHOOK'), response.statusCode, event.type, error || event.id);
+        stripe.log.info('%s [%s/%s]: %s', mock.utils.colorize('blue', 'WEBHOOK'), response.statusCode, event.type, error || event.id);
       }
 
       event.webhooks_delivered_at = mock.utils.timestamp();

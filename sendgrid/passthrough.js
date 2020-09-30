@@ -34,7 +34,7 @@ function Passthrough (mock) {
         }
       }
       if (!found) {
-        console.log('%s %s %s (%s)', mock.utils.colorize('yellow', 'PASSTHROUGH REJECTED'),
+        sendgrid.log.info('%s %s %s (%s)', mock.utils.colorize('yellow', 'PASSTHROUGH REJECTED'),
           message.id, message.to, 'allow');
         return false;
       }
@@ -44,7 +44,7 @@ function Passthrough (mock) {
     if (Array.isArray(passthrough.deny)) {
       for (const item of passthrough.deny) {
         if (message.to.includes(item)) {
-          console.log('%s %s %s (%s)', mock.utils.colorize('yellow', 'PASSTHROUGH REJECTED'),
+          sendgrid.log.info('%s %s %s (%s)', mock.utils.colorize('yellow', 'PASSTHROUGH REJECTED'),
             message.id, message.to, 'deny');
           return false;
         }
@@ -59,7 +59,7 @@ function Passthrough (mock) {
     };
 
     passthrough.transport.sendMail(options, (error, info) => {
-      console.log('%s %s %s %s', mock.utils.colorize('yellow', 'PASSTHROUGH SENT'),
+      sendgrid.log.info('%s %s %s %s', mock.utils.colorize('yellow', 'PASSTHROUGH SENT'),
         message.id, options.to, error ? error : info.response);
     });
 
