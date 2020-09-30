@@ -137,11 +137,6 @@ function StripeServer (mock) {
 
   //////////
 
-  this.data = require('./data');
-
-  this.store = require('./dataStore')(mock, this);
-  this.ui = require('./ui')(mock, this);
-
   this.req = (req, res, next) => {
     const requestId = `req_${ this.store.generateId(24) }`;
     req.requestId = requestId;
@@ -157,6 +152,11 @@ function StripeServer (mock) {
   };
 
   ////////////////////
+
+  this.data = require('./data');
+
+  this.store = require('./dataStore')(mock, this);
+  this.ui = require('./ui')(mock, this);
 
   this.model = require('./model')(mock, this);
   this.errors = require('./errors')(mock, this);

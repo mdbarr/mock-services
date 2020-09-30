@@ -262,11 +262,11 @@ function Customers (mock, stripe) {
 
   ////////////////////
 
-  mock.api.post('/v1/customers', stripe.auth.requireAdmin, this.createCustomer);
-  mock.api.get('/v1/customers/:customer', this.retrieveCustomer);
-  mock.api.post('/v1/customers/:customer', stripe.auth.requireAdmin, this.updateCustomer);
-  mock.api.del('/v1/customers/:customer', stripe.auth.requireAdmin, this.deleteCustomer);
-  mock.api.get('/v1/customers', this.listAllCustomers);
+  mock.api.post('/v1/customers', stripe.req, stripe.auth.requireAdmin, this.createCustomer);
+  mock.api.get('/v1/customers/:customer', stripe.req, this.retrieveCustomer);
+  mock.api.post('/v1/customers/:customer', stripe.req, stripe.auth.requireAdmin, this.updateCustomer);
+  mock.api.del('/v1/customers/:customer', stripe.req, stripe.auth.requireAdmin, this.deleteCustomer);
+  mock.api.get('/v1/customers', stripe.req, this.listAllCustomers);
 
   ////////////////////
 }

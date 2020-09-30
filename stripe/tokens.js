@@ -75,8 +75,8 @@ function Tokens (mock, stripe) {
 
   ////////////////////
 
-  mock.api.post('/v1/tokens', this.createToken);
-  mock.api.get('/v1/tokens/:id', this.retrieveToken);
+  mock.api.post('/v1/tokens', stripe.req, this.createToken);
+  mock.api.get('/v1/tokens/:id', stripe.req, this.retrieveToken);
 
   ////////////////////
 }

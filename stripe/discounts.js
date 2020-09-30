@@ -83,8 +83,8 @@ function Discounts (mock, stripe) {
 
   ////////////////////
 
-  mock.api.del('/v1/customers/:customer/discount', stripe.auth.requireAdmin, this.deleteCustomerDiscount);
-  mock.api.del('/v1/subscriptions/:subscription/discount', stripe.auth.requireAdmin, this.deleteSubscriptionDiscount);
+  mock.api.del('/v1/customers/:customer/discount', stripe.req, stripe.auth.requireAdmin, this.deleteCustomerDiscount);
+  mock.api.del('/v1/subscriptions/:subscription/discount', stripe.req, stripe.auth.requireAdmin, this.deleteSubscriptionDiscount);
 
   ////////////////////
 }

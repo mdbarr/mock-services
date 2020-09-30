@@ -135,11 +135,11 @@ function Plans (mock, stripe) {
 
   ////////////////////
 
-  mock.api.post('/v1/plans', stripe.auth.requireAdmin, this.createPlan);
-  mock.api.get('/v1/plans/:plan', this.retrievePlan);
-  mock.api.post('/v1/plans/:plan', stripe.auth.requireAdmin, this.updatePlan);
-  mock.api.del('/v1/plans/:plan', stripe.auth.requireAdmin, this.deletePlan);
-  mock.api.get('/v1/plans', this.listAllPlans);
+  mock.api.post('/v1/plans', stripe.req, stripe.auth.requireAdmin, this.createPlan);
+  mock.api.get('/v1/plans/:plan', stripe.req, this.retrievePlan);
+  mock.api.post('/v1/plans/:plan', stripe.req, stripe.auth.requireAdmin, this.updatePlan);
+  mock.api.del('/v1/plans/:plan', stripe.req, stripe.auth.requireAdmin, this.deletePlan);
+  mock.api.get('/v1/plans', stripe.req, this.listAllPlans);
 
   ////////////////////
 }

@@ -34,8 +34,8 @@ function Events (mock, stripe) {
 
   ////////////////////
 
-  mock.api.get('/v1/events/:event', this.retrieveEvent);
-  mock.api.get('/v1/events', this.listAllEvents);
+  mock.api.get('/v1/events/:event', stripe.req, this.retrieveEvent);
+  mock.api.get('/v1/events', stripe.req, this.listAllEvents);
 
   ////////////////////
 }

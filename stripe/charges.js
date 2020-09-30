@@ -38,8 +38,8 @@ function Charges (mock, stripe) {
 
   ////////////////////
 
-  mock.api.get('/v1/charges/:charge', stripe.auth.requireAdmin, this.retrieveCharge);
-  mock.api.get('/v1/charges', stripe.auth.requireAdmin, this.listAllCharges);
+  mock.api.get('/v1/charges/:charge', stripe.req, stripe.auth.requireAdmin, this.retrieveCharge);
+  mock.api.get('/v1/charges', stripe.req, stripe.auth.requireAdmin, this.listAllCharges);
 
   ////////////////////
 }

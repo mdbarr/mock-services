@@ -125,11 +125,11 @@ function InvoiceItems (mock, stripe) {
 
   ////////////////////
 
-  mock.api.post('/v1/invoiceitems', stripe.auth.requireAdmin, this.createInvoiceItem);
-  mock.api.get('/v1/invoiceitems/:invoiceItem', stripe.auth.requireAdmin, this.retrieveInvoiceItem);
-  mock.api.post('/v1/invoiceitems/:invoiceItem', stripe.auth.requireAdmin, this.updateInvoiceItem);
-  mock.api.del('/v1/invoiceitems/:invoiceItem', stripe.auth.requireAdmin, this.deleteInvoiceItem);
-  mock.api.get('/v1/invoiceitems', stripe.auth.requireAdmin, this.listAllInvoiceItems);
+  mock.api.post('/v1/invoiceitems', stripe.req, stripe.auth.requireAdmin, this.createInvoiceItem);
+  mock.api.get('/v1/invoiceitems/:invoiceItem', stripe.req, stripe.auth.requireAdmin, this.retrieveInvoiceItem);
+  mock.api.post('/v1/invoiceitems/:invoiceItem', stripe.req, stripe.auth.requireAdmin, this.updateInvoiceItem);
+  mock.api.del('/v1/invoiceitems/:invoiceItem', stripe.req, stripe.auth.requireAdmin, this.deleteInvoiceItem);
+  mock.api.get('/v1/invoiceitems', stripe.req, stripe.auth.requireAdmin, this.listAllInvoiceItems);
 
   ////////////////////
 }

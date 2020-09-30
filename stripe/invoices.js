@@ -342,11 +342,11 @@ function Invoices (mock, stripe) {
 
   ////////////////////
 
-  mock.api.get('/v1/invoices/upcoming', stripe.auth.requireAdmin, this.retrieveUpcomingInvoice);
-  mock.api.post('/v1/invoices', stripe.auth.requireAdmin, this.createInvoice);
-  mock.api.get('/v1/invoices/:invoice', stripe.auth.requireAdmin, this.retrieveInvoice);
-  mock.api.post('/v1/invoices/:invoice/pay', stripe.auth.requireAdmin, this.payInvoice);
-  mock.api.get('/v1/invoices', stripe.auth.requireAdmin, this.listAllInvoices);
+  mock.api.get('/v1/invoices/upcoming', stripe.req, stripe.auth.requireAdmin, this.retrieveUpcomingInvoice);
+  mock.api.post('/v1/invoices', stripe.req, stripe.auth.requireAdmin, this.createInvoice);
+  mock.api.get('/v1/invoices/:invoice', stripe.req, stripe.auth.requireAdmin, this.retrieveInvoice);
+  mock.api.post('/v1/invoices/:invoice/pay', stripe.req, stripe.auth.requireAdmin, this.payInvoice);
+  mock.api.get('/v1/invoices', stripe.req, stripe.auth.requireAdmin, this.listAllInvoices);
 
   ////////////////////
 }

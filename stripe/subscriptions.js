@@ -333,19 +333,19 @@ function Subscriptions (mock, stripe) {
 
   ////////////////////
 
-  mock.api.post('/v1/subscriptions', stripe.auth.requireAdmin, this.createSubscription);
-  mock.api.post('/v1/customers/:customer/subscriptions', stripe.auth.requireAdmin, this.createSubscription);
+  mock.api.post('/v1/subscriptions', stripe.req, stripe.auth.requireAdmin, this.createSubscription);
+  mock.api.post('/v1/customers/:customer/subscriptions', stripe.req, stripe.auth.requireAdmin, this.createSubscription);
 
-  mock.api.get('/v1/subscriptions/:subscription', stripe.auth.requireAdmin, this.retrieveSubscription);
-  mock.api.get('/v1/customers/:customer/subscriptions/:subscription', stripe.auth.requireAdmin, this.retrieveSubscription);
+  mock.api.get('/v1/subscriptions/:subscription', stripe.req, stripe.auth.requireAdmin, this.retrieveSubscription);
+  mock.api.get('/v1/customers/:customer/subscriptions/:subscription', stripe.req, stripe.auth.requireAdmin, this.retrieveSubscription);
 
-  mock.api.post('/v1/subscriptions/:subscription', stripe.auth.requireAdmin, this.updateSubscription);
-  mock.api.post('/v1/customers/:customer/subscriptions/:subscription', stripe.auth.requireAdmin, this.updateSubscription);
+  mock.api.post('/v1/subscriptions/:subscription', stripe.req, stripe.auth.requireAdmin, this.updateSubscription);
+  mock.api.post('/v1/customers/:customer/subscriptions/:subscription', stripe.req, stripe.auth.requireAdmin, this.updateSubscription);
 
-  mock.api.del('/v1/subscriptions/:subscription', stripe.auth.requireAdmin, this.cancelSubscription);
-  mock.api.del('/v1/customers/:customer/subscriptions/:subscription', stripe.auth.requireAdmin, this.cancelSubscription);
+  mock.api.del('/v1/subscriptions/:subscription', stripe.req, stripe.auth.requireAdmin, this.cancelSubscription);
+  mock.api.del('/v1/customers/:customer/subscriptions/:subscription', stripe.req, stripe.auth.requireAdmin, this.cancelSubscription);
 
-  mock.api.get('/v1/subscriptions', stripe.auth.requireAdmin, this.listSubscriptions);
+  mock.api.get('/v1/subscriptions', stripe.req, stripe.auth.requireAdmin, this.listSubscriptions);
 
   ////////////////////
 }

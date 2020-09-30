@@ -138,11 +138,11 @@ function Coupons (mock, stripe) {
 
   ////////////////////
 
-  mock.api.post('/v1/coupons', stripe.auth.requireAdmin, this.createCoupon);
-  mock.api.get('/v1/coupons/:coupon', this.retrieveCoupon);
-  mock.api.post('/v1/coupons/:coupon', stripe.auth.requireAdmin, this.updateCoupon);
-  mock.api.del('/v1/coupons/:coupon', stripe.auth.requireAdmin, this.deleteCoupon);
-  mock.api.get('/v1/coupons', this.listAllCoupons);
+  mock.api.post('/v1/coupons', stripe.req, stripe.auth.requireAdmin, this.createCoupon);
+  mock.api.get('/v1/coupons/:coupon', stripe.req, this.retrieveCoupon);
+  mock.api.post('/v1/coupons/:coupon', stripe.req, stripe.auth.requireAdmin, this.updateCoupon);
+  mock.api.del('/v1/coupons/:coupon', stripe.req, stripe.auth.requireAdmin, this.deleteCoupon);
+  mock.api.get('/v1/coupons', stripe.req, this.listAllCoupons);
 
   ////////////////////
 }

@@ -137,9 +137,9 @@ function Cards (mock, stripe) {
 
   ////////////////////
 
-  mock.api.get('/v1/customers/:customer/sources/:card', stripe.auth.requireAdmin, this.retrieveCard);
-  mock.api.post('/v1/customers/:customer/sources/:card', stripe.auth.requireAdmin, this.updateCard);
-  mock.api.del('/v1/customers/:customer/sources/:card', stripe.auth.requireAdmin, this.deleteCard);
+  mock.api.get('/v1/customers/:customer/sources/:card', stripe.req, stripe.auth.requireAdmin, this.retrieveCard);
+  mock.api.post('/v1/customers/:customer/sources/:card', stripe.req, stripe.auth.requireAdmin, this.updateCard);
+  mock.api.del('/v1/customers/:customer/sources/:card', stripe.req, stripe.auth.requireAdmin, this.deleteCard);
 
   ////////////////////
 }
