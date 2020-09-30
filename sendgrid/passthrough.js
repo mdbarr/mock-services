@@ -24,9 +24,10 @@ function Passthrough (mock) {
       this.initTransport(passthrough);
     }
 
-    if (Array.isArray(passthrough.whitelist) && passthrough.whitelist.length) {
+    // Only allow specific to addresses if an allow list is defined
+    if (Array.isArray(passthrough.allow) && passthrough.allow.length) {
       let found = false;
-      for (const item of passthrough.whitelist) {
+      for (const item of passthrough.allow) {
         if (message.to.includes(item)) {
           found = true;
           break;
@@ -34,16 +35,17 @@ function Passthrough (mock) {
       }
       if (!found) {
         console.log('%s %s %s (%s)', mock.utils.colorize('yellow', 'PASSTHROUGH REJECTED'),
-          message.id, message.to, 'whitelist');
+          message.id, message.to, 'allow');
         return false;
       }
     }
 
-    if (Array.isArray(passthrough.blacklist)) {
-      for (const item of passthrough.blacklist) {
+    // Always deny specific to addresses if a deny list is defined
+    if (Array.isArray(passthrough.deny)) {
+      for (const item of passthrough.deny) {
         if (message.to.includes(item)) {
           console.log('%s %s %s (%s)', mock.utils.colorize('yellow', 'PASSTHROUGH REJECTED'),
-            message.id, message.to, 'blacklist');
+            message.id, message.to, 'deny');
           return false;
         }
       }
