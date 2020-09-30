@@ -1,14 +1,11 @@
 'use strict';
 
-const restify = require('restify');
-const corsMiddleware = require('restify-cors-middleware');
+function StripeServer (mock) {
+  this.config = mock.config.stripe;
 
-function StripeServer (options, config) {
-  const stripe = this;
+  this.version = require('../package.json').version;
 
-  stripe.version = require('../package.json').version;
-
-  stripe.options = {
+  this.options = {
     apiVersion: '2017-06-05',
     name: 'mock-stripe-server',
     host: '0.0.0.0',
@@ -21,93 +18,184 @@ function StripeServer (options, config) {
     },
   };
 
-  stripe.util = require('./util');
-  stripe.data = require('../data');
+  //////////
 
-  stripe.server = restify.createServer({
-    ignoreTrailingSlash: true,
-    name: stripe.options.name,
-    strictNext: true,
-  });
+  this.createUpdateObject = (fields, object, body) => {
+    const update = {};
+    const previous = {};
+    for (const field of fields) {
+      if (body[field]) {
+        if (typeof object[field] === 'object') {
+          previous[field] = clone(object[field]);
+        } else {
+          previous[field] = object[field];
+        }
+        update[field] = body[field];
+      }
+    }
+    return [ update, previous ];
+  };
+
+  this.updateObject = (target, source, authority) => {
+    authority = authority || target;
+    for (const property in authority) {
+      if (source[property] !== undefined) {
+        if (source[property] && typeof source[property] === 'object') {
+          target[property] = updateObject(target[property] || {}, source[property], source[property]);
+        } else {
+          let value = source[property];
+          if (value === '' || value === undefined) {
+            value = null;
+          }
+          target[property] = value;
+        }
+      }
+    }
+    return target;
+  };
+
+  this.calculateProrationPercent = (start, end) => {
+    const diff = end - start;
+    const span = timestamp() - start;
+    const used = Math.floor(span / diff * 100);
+    const percent = 100 - used;
+
+    return percent;
+  };
+
+  this.getDefaultAddress = () => {
+    return {
+      address: '1 Alewife Center',
+      city: 'Cambridge',
+      zip: '02140',
+      state: 'MA',
+      country: 'USA',
+    };
+  };
+
+  this.getDefaultCreditCard () => {
+    return {
+      number: '4242424242424242',
+      exp_month: 12,
+      exp_year: new Date().getFullYear() + 2,
+      cvc: '123',
+      address_line1: '1 Alewife Center',
+      address_line2: 'Suite 130',
+      address_city: 'Cambridge',
+      address_state: 'MA',
+      address_zip: '02140',
+      address_country: 'US',
+    };
+  };
+
+  this.parseConfig = (configs) => {
+    if (!Array.isArray(configs)) {
+      configs = [ configs ];
+    }
+
+    for (const config of configs) {
+      const identity = config.name;
+
+      const context = {
+        identity,
+        admin: true,
+        livemode: toBoolean(config.livemode),
+      };
+
+      console.log(`Loading configuration for ${ colorize('bright blue', identity) } organization:`);
+      this.store.addKey(identity, {
+        secretKey: config.keys.secret,
+        publishableKey: config.keys.publishable,
+      });
+
+      if (config.plans) {
+        for (let plan of config.plans) {
+          plan.context = context;
+          const amount = `($${ plan.amount / 100 }/${ plan.interval })`;
+          console.log(`  Adding plan ${ colorize('bright green', plan.id) } ${ colorize('grey', amount) }`);
+          plan = this.model.plan(plan);
+        }
+      }
+
+      if (config.coupons) {
+        for (let coupon of config.coupons) {
+          coupon.context = context;
+          let amount = coupon.amount_off ? `$${ coupon.amount_off / 100 }` : `${ coupon.percent_off }%`;
+          amount = `(${ amount } off)`;
+          console.log(`  Adding coupon ${ colorize('bright cyan', coupon.id) } ${ colorize('grey', amount) }`);
+          coupon = this.model.coupon(coupon);
+        }
+      }
+
+      if (config.webhooks) {
+        for (let webhook of config.webhooks) {
+          webhook.context = context;
+          const webhookUrl = url.parse(webhook.url);
+          const webhookName = webhook.url.replace(webhookUrl.search, '');
+          console.log(`  Adding webhook ${ colorize('bright magenta', webhookName) }`);
+          webhook = this.model.webhook(webhook);
+        }
+      }
+    }
+  };
 
   //////////
 
-  this.cors = corsMiddleware({
-    origins: [ '*' ],
-    allowHeaders: [ 'Authorization' ],
-    exposeHeaders: [ 'Authorization' ],
-  });
+  this.data = require('../data');
 
-  stripe.server.pre(this.cors.preflight);
-  stripe.server.use(this.cors.actual);
+  this.store = require('./dataStore')(this);
+  this.ui = require('./ui')(this);
 
-  //////////
-
-  stripe.server.use(restify.pre.sanitizePath());
-  stripe.server.use(restify.plugins.bodyParser());
-  stripe.server.pre(restify.plugins.pre.dedupeSlashes());
-  stripe.server.use(restify.plugins.dateParser());
-  stripe.server.use(restify.plugins.queryParser());
-  stripe.server.use(restify.plugins.authorizationParser());
-
-  stripe.store = require('./dataStore')(stripe);
-  stripe.ui = require('./ui')(stripe);
-
-  stripe.server.use((req, res, next) => {
-    const requestId = `req_${ stripe.store.generateId(24) }`;
+  this.server.use((req, res, next) => {
+    const requestId = `req_${ this.store.generateId(24) }`;
     req.requestId = requestId;
 
     res.header('Request-Id', requestId);
-    res.header('mock-stripe-server-version', stripe.version);
-    res.header('Stripe-Version', stripe.options.apiVersion);
+    res.header('mock-stripe-server-version', this.version);
+    res.header('Stripe-Version', this.options.apiVersion);
 
-    if (!stripe.options.silent) {
-      stripe.util.logger(req);
+    if (!this.options.silent) {
+      this.util.logger(req);
     }
     return next();
   });
 
   ////////////////////
 
-  stripe.model = require('./model')(stripe);
-  stripe.errors = require('./errors')(stripe);
-  stripe.auth = require('./auth')(stripe);
-  stripe.tokens = require('./tokens')(stripe);
-  stripe.plans = require('./plans')(stripe);
-  stripe.coupons = require('./coupons')(stripe);
-  stripe.customers = require('./customers')(stripe);
-  stripe.discounts = require('./discounts')(stripe);
-  stripe.cards = require('./cards')(stripe);
-  stripe.subscriptions = require('./subscriptions')(stripe);
-  stripe.invoices = require('./invoices')(stripe);
-  stripe.invoiceItems = require('./invoiceItems')(stripe);
-  stripe.charges = require('./charges')(stripe);
-  stripe.events = require('./events')(stripe);
-  stripe.webhooks = require('./webhooks')(stripe);
+  this.model = require('./model')(this);
+  this.errors = require('./errors')(this);
+  this.auth = require('./auth')(this);
+  this.tokens = require('./tokens')(this);
+  this.plans = require('./plans')(this);
+  this.coupons = require('./coupons')(this);
+  this.customers = require('./customers')(this);
+  this.discounts = require('./discounts')(this);
+  this.cards = require('./cards')(this);
+  this.subscriptions = require('./subscriptions')(this);
+  this.invoices = require('./invoices')(this);
+  this.invoiceItems = require('./invoiceItems')(this);
+  this.charges = require('./charges')(this);
+  this.events = require('./events')(this);
+  this.webhooks = require('./webhooks')(this);
 
   ////////////////////
 
-  if (options) {
-    Object.assign(stripe.options, options);
+  Object.assign(this.options, options);
 
-    stripe.options.livemode = stripe.util.toBoolean(stripe.options.livemode);
-    stripe.options.silent = stripe.util.toBoolean(stripe.options.silent);
+  this.options.livemode = this.util.toBoolean(this.options.livemode);
+  this.options.silent = this.util.toBoolean(this.options.silent);
 
-    stripe.store.loadStore();
-  }
-
-  if (config) {
-    stripe.util.parseConfig(stripe, config);
-  }
+  this.store.loadStore();
+  this.util.parseConfig(stripe, mock.config.stripe);
 
   ////////////////////
 
-  stripe.boot = (callback) => {
-    process.title = stripe.options.name;
-    stripe.server.listen(stripe.options.port, stripe.options.host, (error) => {
+  this.boot = (callback) => {
+    process.title = this.options.name;
+    this.server.listen(this.options.port, this.options.host, (error) => {
       if (!error) {
         console.info('Mock Stripe API Server v%s listening at %s',
-          stripe.version, stripe.server.url);
+          this.version, this.server.url);
       }
 
       if (callback) {
@@ -118,16 +206,16 @@ function StripeServer (options, config) {
     });
   };
 
-  stripe.close = (callback) => {
-    stripe.server.close(() => {
-      stripe.store.writeStore();
+  this.close = (callback) => {
+    this.server.close(() => {
+      this.store.writeStore();
       return callback();
     });
   };
 
-  stripe.quit = () => {
+  this.quit = () => {
     console.log('Exiting...');
-    stripe.close(() => {
+    this.close(() => {
       process.exit(0);
     });
   };
@@ -135,7 +223,7 @@ function StripeServer (options, config) {
   ////////////////////
 
   process.on('SIGINT', () => {
-    stripe.quit();
+    this.quit();
   });
 }
 

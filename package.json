@@ -8,6 +8,7 @@
   "license": "MIT",
   "dependencies": {
     "async": "^3.2.0",
+    "barrkeep": "^2.6.6",
     "mailparser": "^3.0.0",
     "nodemailer": "^6.4.10",
     "request": "^2.88.2",
@@ -23,7 +24,7 @@
   },
   "scripts": {
     "build": "docker build --pull -t mock-sendgrid .",
-    "lint": "eslint *.js bin stripe sendgrid",
+    "lint": "eslint *.js bin lib stripe sendgrid",
     "run:docker": "docker run -d --rm --name mock-sendgrid -p 5870:5870 -p 5871:5871 mock-sendgrid:latest",
     "start": "forever --minUptime=1000 --spinSleepTime=500 ./cli.js"
   }
