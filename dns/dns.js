@@ -31,9 +31,7 @@ function DNS (mock) {
   });
 
   this.start = (callback) => {
-    console.log('here');
     this.socket.bind(5555, mock.config.host, (error) => {
-      console.log('there');
       if (error) {
         return callback(error);
       }
