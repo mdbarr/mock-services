@@ -2,7 +2,7 @@
 
 const mailer = require('nodemailer');
 
-function Passthrough (mock) {
+function Passthrough (mock, sendgrid) {
   this.initTransport = (passthrough) => {
     passthrough.transport = mailer.createTransport({
       host: passthrough.host || 'smtp.sendgrid.net',
@@ -67,4 +67,4 @@ function Passthrough (mock) {
   };
 }
 
-module.exports = (mock) => new Passthrough(mock);
+module.exports = (mock, sendgrid) => new Passthrough(mock, sendgrid);
