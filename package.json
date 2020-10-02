@@ -24,7 +24,7 @@
   },
   "scripts": {
     "build": "docker build --pull -t mock-services .",
-    "lint": "eslint *.js bin lib stripe sendgrid",
+    "lint": "eslint *.js bin lib dns sendgrid stripe",
     "start": "docker run -d --rm --name mock-services -p 5775:5775 -p 5870:5870 mock-services:latest"
   }
 }
