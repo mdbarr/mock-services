@@ -25,15 +25,17 @@ function DNS (mock) {
     return this.resolver.resolve(question.name, question.type, (error, result) => {
       this.log.info(result);
 
+      if (error || !result) {
+        return callback(error);
+      }
+
       if (!Array.isArray(result)) {
         result = [ result ];
       }
 
-      result = result.map((item) => {
-        if (typeof item === 'string') {
-          item = { data: item };
-        }
-        return Object.assign({}, question, item);
+      result = result.map((data) => {
+        console.log('data', typeof data);
+        return Object.assign({}, question, { data });
       });
 
       return callback(null, result);
@@ -53,18 +55,23 @@ function DNS (mock) {
     const response = {
       type: 'response',
       id: message.id,
+      questions: message.questions,
       answers: [ ],
     };
 
     return async.map(message.questions, this.resolve, (error, answers) => {
       if (error) {
-        return this.log.error(error);
+        console.log('error', error);
       }
 
-      answers.forEach((answer) => {
-        console.log(answer);
-        response.answers.push(...answer);
-      });
+      if (Array.isArray(answers)) {
+        answers.forEach((answer) => {
+          console.log(answer);
+          if (answer) {
+            response.answers.push(...answer);
+          }
+        });
+      }
 
       this.log.info('resolve done');
       this.log.info(response);
