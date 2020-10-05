@@ -74,7 +74,10 @@ function DNS (mock) {
         timestamp: Date.now(),
       });
 
-      result = result.map((data) => Object.assign({}, question, { data }));
+      result = result.map((data) => Object.assign({}, question, {
+        data,
+        ttl: 300,
+      }));
 
       return callback(null, result);
     });
