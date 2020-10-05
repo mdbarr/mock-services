@@ -7,8 +7,9 @@ const dnsPacket = require('dns-packet');
 
 function DNS (mock) {
   this.config = mock.config.dns;
-
   this.log = mock.log.child({ service: 'dns' });
+
+  this.cache = new Map();
 
   //////////
 
@@ -19,24 +20,61 @@ function DNS (mock) {
     this.resolver.setServers([ '8.8.8.8', '1.1.1.1' ]);
   }
 
+  function cacheKey (question) {
+    return `${ question.class }-${ question.type }-${ question.name }`;
+  }
+
+  function match (name, pattern) {
+    const regexp = mock.utils.toRegularExpression(pattern);
+    return regexp.test(name);
+  }
+
+  this.lookup = (key, question, callback) => {
+    if (this.cache.has(key)) {
+      const result = this.cache.get(key);
+      this.log.verbose('cache hit');
+      this.log.verbose(result);
+      return setImmediate(callback, result.data);
+    }
+
+    this.log.verbose('cache miss');
+    this.log.verbose(question);
+
+    const records = this.config.records[question.type];
+
+    if (records) {
+      for (const pattern in records) {
+        if (match(question.name, pattern)) {
+          return setImmediate(callback, records[pattern]);
+        }
+      }
+    }
+
+    return this.resolver.resolve(question.name, question.type, (error, result) => callback(result));
+  };
+
   this.resolve = (question, callback) => {
-    this.log.info(question);
+    this.log.verbose(question);
 
-    return this.resolver.resolve(question.name, question.type, (error, result) => {
-      this.log.info(result);
+    const key = cacheKey(question);
 
-      if (error || !result) {
-        return callback(error);
+    return this.lookup(key, question, (result) => {
+      this.log.verbose(result);
+
+      if (!result) {
+        return callback(new Error('NXDOMAIN'));
       }
 
       if (!Array.isArray(result)) {
         result = [ result ];
       }
 
-      result = result.map((data) => {
-        console.log('data', typeof data);
-        return Object.assign({}, question, { data });
+      this.cache.set(key, {
+        data: result,
+        timestamp: mock.utils.timestamp(),
       });
+
+      result = result.map((data) => Object.assign({}, question, { data }));
 
       return callback(null, result);
     });
@@ -49,8 +87,8 @@ function DNS (mock) {
   this.socket.on('message', (message, rinfo) => {
     message = dnsPacket.decode(message);
 
-    this.log.info(message);
-    this.log.info(rinfo);
+    this.log.verbose(message);
+    this.log.verbose(rinfo);
 
     const response = {
       type: 'response',
@@ -61,20 +99,19 @@ function DNS (mock) {
 
     return async.map(message.questions, this.resolve, (error, answers) => {
       if (error) {
-        console.log('error', error);
+        this.log.error('error', error);
       }
 
       if (Array.isArray(answers)) {
         answers.forEach((answer) => {
-          console.log(answer);
           if (answer) {
             response.answers.push(...answer);
           }
         });
       }
 
-      this.log.info('resolve done');
-      this.log.info(response);
+      this.log.verbose('resolve done');
+      this.log.verbose(response);
 
       const packet = dnsPacket.encode(response);
       return this.socket.send(packet, 0, packet.length, rinfo.port, rinfo.address);
