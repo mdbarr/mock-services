@@ -4,7 +4,7 @@ WORKDIR /mock-services
 
 COPY package.json yarn.lock ./
 
-RUN yarn install
+RUN yarn install --production
 
 COPY . .
 
