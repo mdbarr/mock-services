@@ -71,7 +71,7 @@ function DNS (mock) {
 
       this.cache.set(key, {
         data: result,
-        timestamp: mock.utils.timestamp(),
+        timestamp: Date.now(),
       });
 
       result = result.map((data) => Object.assign({}, question, { data }));
@@ -118,13 +118,27 @@ function DNS (mock) {
     });
   });
 
-  /////////
+  //////////
+
+  this.reap = () => {
+    const now = Date.now();
+    for (const [ key, value ] of this.cache) {
+      if (now - value.timestamp > this.config.cache.ttl) {
+        this.cache.delete(key);
+      }
+    }
+  };
+
+  //////////
 
   this.start = (callback) => {
     this.socket.bind(5555, mock.config.host, (error) => {
       if (error) {
         return callback(error);
       }
+
+      this.reaper = setInterval(this.reap, this.config.cache.reap);
+
       const address = this.socket.address();
 
       this.log.info(`Mock DNS Proxy Server running on dns://${ address.address }:${ address.port }`);
