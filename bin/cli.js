@@ -2,13 +2,13 @@
 'use strict';
 
 require('barrkeep/pp');
-const fs = require('fs');
 const { argv: options } = require('yargs');
+
 const MockServices = require('../lib/mockServices');
 
 let config;
 if (options.config) {
-  config = JSON.parse(fs.readFileSync(options.config));
+  config = require(options.config);
 }
 
 const mock = new MockServices(config);
