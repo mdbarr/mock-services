@@ -10,4 +10,4 @@ COPY . .
 
 EXPOSE 5775 5780
 
-CMD [ "./bin/cli.js" ]
+ENTRYPOINT [ "./bin/cli.js" ]
