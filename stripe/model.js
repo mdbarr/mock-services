@@ -8,15 +8,13 @@ function Model (mock, stripe) {
       admin: request.authorization.admin,
       requestId: request.requestId,
       timestamp,
-      livemode: stripe.options.livemode,
+      livemode: stripe.config.livemode,
       events: [],
       next,
     };
 
     model.send = (code, object) => {
-      if (!stripe.options.silent) {
-        console.json(object);
-      }
+      stripe.log.verbose(object);
 
       this.request({
         id: request.requestId,
@@ -24,6 +22,7 @@ function Model (mock, stripe) {
         method: request.method,
         url: request.url,
         parameters: request.params,
+        headers: request.headers,
         query: request.query,
         body: request.body,
         statusCode: code,
@@ -736,7 +735,7 @@ function Model (mock, stripe) {
     const model = {
       id: `evt_${ stripe.store.generateId(24) }`,
       object: 'event',
-      api_version: stripe.options.apiVersion,
+      api_version: stripe.config.apiVersion,
       created: mock.utils.timestamp(),
       data: { object },
       livemode: context.livemode,
@@ -753,9 +752,7 @@ function Model (mock, stripe) {
     }
 
     stripe.store.addEvent(context.identity, model.id, model);
-    if (!stripe.options.silent) {
-      console.json(model);
-    }
+    stripe.log.verbose(model);
 
     context.events.push(model);
 
@@ -779,7 +776,7 @@ function Model (mock, stripe) {
   };
 
   this.request = function({
-    id, timestamp, method, url, parameters, query, body, statusCode, response,
+    id, timestamp, method, url, parameters, headers, query, body, statusCode, response,
   }) {
     const model = {
       id,
@@ -787,6 +784,7 @@ function Model (mock, stripe) {
       method,
       url,
       parameters: parameters || null,
+      headers: headers || null,
       query: query || null,
       body: body || null,
       statusCode,

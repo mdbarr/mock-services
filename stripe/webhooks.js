@@ -26,18 +26,20 @@ function Webhooks (mock, stripe) {
       method: 'POST',
       url: webhook.url,
     }, (error, response) => {
-      if (!stripe.options.silent) {
-        stripe.log.info('%s [%s/%s]: %s', mock.utils.colorize('blue', 'WEBHOOK'), response.statusCode, event.type, error || event.id);
+      if (error || !response) {
+        stripe.log.error('%s [%s/%s]: %s', mock.utils.colorize('blue', 'WEBHOOK'), -1, event.type, error || event.id);
+      } else {
+        stripe.log.verbose('%s [%s/%s]: %s', mock.utils.colorize('blue', 'WEBHOOK'), response.statusCode, event.type, error || event.id);
       }
 
       event.webhooks_delivered_at = mock.utils.timestamp();
 
-      if (stripe.options.webhooks.delay) {
-        return setTimeout(() => next(), stripe.options.webhooks.delay);
+      if (stripe.config.webhooks.delay) {
+        return setTimeout(() => next(), stripe.config.webhooks.delay);
       }
       return next();
     });
-  }, stripe.options.webhooks.concurrency);
+  }, stripe.config.webhooks.concurrency);
 
   this.queueWebhooks = ({ context, event }) => {
     const webhooks = stripe.store.getWebhooks(context.identity);

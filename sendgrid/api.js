@@ -6,7 +6,7 @@ function API (mock, sendgrid) {
     req.requestId = requestId;
 
     res.header('Request-Id', requestId);
-    res.header(`${ sendgrid.options.name }-version`, sendgrid.version);
+    res.header(`${ mock.config.name }-sendgrid-version`, mock.config.version);
 
     mock.log.req(req);
 

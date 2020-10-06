@@ -3,22 +3,9 @@
 const url = require('url');
 
 function Stripe (mock) {
-  this.version = require('../package.json').version;
-
   this.log = mock.log.child({ service: 'stripe' });
 
-  this.options = {
-    apiVersion: '2017-06-05',
-    name: 'mock-stripe-server',
-    host: '0.0.0.0',
-    port: 5757,
-    livemode: false,
-    silent: false,
-    webhooks: {
-      concurrency: 1,
-      delay: 0,
-    },
-  };
+  this.config = mock.config.stripe;
 
   //////////
 
@@ -144,8 +131,8 @@ function Stripe (mock) {
     req.requestId = requestId;
 
     res.header('Request-Id', requestId);
-    res.header('mock-stripe-server-version', this.version);
-    res.header('Stripe-Version', this.options.apiVersion);
+    res.header(`${ mock.config.name }-stripe-version`, mock.config.version);
+    res.header('Stripe-Version', this.config.apiVersion);
 
     mock.log.req(req);
 
@@ -178,11 +165,8 @@ function Stripe (mock) {
   ////////////////////
 
   this.start = (callback) => {
-    this.options.livemode = mock.utils.toBoolean(this.options.livemode);
-    this.options.silent = mock.utils.toBoolean(this.options.silent);
-
     this.store.loadStore();
-    this.parseConfig(mock.config.stripe);
+    this.parseConfig(mock.config.stripe.organizations);
     return setImmediate(callback);
   };
 }

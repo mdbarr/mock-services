@@ -33,8 +33,8 @@ function DataStore (mock, stripe) {
 
   this.loadStore = () => {
     try {
-      if (stripe.options.store && fs.existsSync(stripe.options.store)) {
-        const fileStore = JSON.parse(fs.readFileSync(stripe.options.store));
+      if (stripe.config.store && fs.existsSync(stripe.config.store)) {
+        const fileStore = JSON.parse(fs.readFileSync(stripe.config.store));
         Object.assign(store, fileStore);
       }
     } catch (error) {
@@ -44,8 +44,8 @@ function DataStore (mock, stripe) {
 
   this.writeStore = () => {
     try {
-      if (stripe.options.store) {
-        fs.writeFileSync(stripe.options.store, JSON.stringify(store, null, 2));
+      if (stripe.config.store) {
+        fs.writeFileSync(stripe.config.store, JSON.stringify(store, null, 2));
       }
     } catch (error) {
       stripe.log.info('Error writing datastore', error.stack);

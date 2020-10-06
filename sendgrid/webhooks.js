@@ -5,7 +5,9 @@ const request = require('request');
 
 function Webhooks (mock, sendgrid) {
   const queue = async.queue((options, next) => request(options, (error, response) => {
-    if (!sendgrid.options.silent) {
+    if (error || !response) {
+      sendgrid.log.error('%s [%s/%s]: %s', mock.utils.colorize('blue', 'WEBHOOK'), -1, options.body[0].event, error || options.body[0].sg_message_id);
+    } else {
       sendgrid.log.info('%s [%s/%s]: %s', mock.utils.colorize('blue', 'WEBHOOK'), response.statusCode, options.body[0].event, error || options.body[0].sg_message_id);
     }
 
