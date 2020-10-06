@@ -52,7 +52,7 @@ function DataStore (mock, sendgrid) {
     users.forEach((user) => {
       user.webhooks = user.webhooks || [];
 
-      sendgrid.log.info('  Adding user %s with %d webhooks, passthrough %s.',
+      sendgrid.log.info('Adding user %s with %d webhooks, passthrough %s.',
         mock.utils.colorize('cyan', user.name),
         user.webhooks.length,
         user.passthrough ? 'enabled' : 'disabled');

@@ -135,6 +135,18 @@ function DNS (mock) {
   //////////
 
   this.start = (callback) => {
+    const configs = [];
+    for (const type in this.config.records) {
+      const size = mock.utils.size(this.config.records[type]);
+      if (size) {
+        configs.push(`${ size } IN ${ type }`);
+      }
+    }
+
+    if (configs.length) {
+      this.log.info(`${ configs.join(', ') } records added`);
+    }
+
     this.socket.bind(mock.config.dns.port, mock.config.host, (error) => {
       if (error) {
         return callback(error);
@@ -145,6 +157,7 @@ function DNS (mock) {
       const address = this.socket.address();
 
       this.log.info(`Mock DNS Proxy Server running on dns://${ address.address }:${ address.port }`);
+
       return callback();
     });
   };
