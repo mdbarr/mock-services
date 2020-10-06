@@ -8,6 +8,6 @@ RUN yarn install --production
 
 COPY . .
 
-EXPOSE 5775 5780
+EXPOSE 8225 8453 8480
 
 ENTRYPOINT [ "./bin/cli.js" ]
