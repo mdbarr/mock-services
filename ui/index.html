@@ -111,67 +111,67 @@ new Vue({
         icon: 'business',
         title: 'Organizations',
         type: 'organization',
-        url: '/ui/organizations'
+        url: '/api/mock/stripe/organizations'
       }],
       [{
         icon: 'schedule',
         title: 'Plans',
         type: 'plan',
-        url: '/ui/plans/__ORG__'
+        url: '/api/mock/stripe/plans/__ORG__'
       }, {
         icon: 'receipt',
         title: 'Coupons',
         type: 'coupon',
-        url: '/ui/coupons/__ORG__'
+        url: '/api/mock/stripe/coupons/__ORG__'
       }],
       [{
         icon: 'account_balance_wallet',
         title: 'Tokens',
         type: 'token',
-        url: '/ui/tokens/__ORG__'
+        url: '/api/mock/stripe/tokens/__ORG__'
       }, {
         icon: 'credit_card',
         title: 'Cards',
         type: 'card',
-        url: '/ui/cards/__ORG__'
+        url: '/api/mock/stripe/cards/__ORG__'
       }, {
         icon: 'account_circle',
         title: 'Customers',
         type: 'customer',
-        url: '/ui/customers/__ORG__'
+        url: '/api/mock/stripe/customers/__ORG__'
       }],
       [{
         icon: 'restore',
         title: 'Subscriptions',
         type: 'subscription',
-        url: '/ui/subscriptions/__ORG__'
+        url: '/api/mock/stripe/subscriptions/__ORG__'
       }, {
         icon: 'description',
         title: 'Invoices',
         type: 'invoice',
-        url: '/ui/invoices/__ORG__'
+        url: '/api/mock/stripe/invoices/__ORG__'
       }, {
         icon: 'monetization_on',
         title: 'Charges',
         type: 'charge',
-        url: '/ui/charges/__ORG__'
+        url: '/api/mock/stripe/charges/__ORG__'
       }],
       [{
         icon: 'event',
         title: 'Events',
         type: 'event',
-        url: '/ui/events/__ORG__'
+        url: '/api/mock/stripe/events/__ORG__'
       }, {
         icon: 'public',
         title: 'Webhooks',
         type: 'webhook',
-        url: '/ui/webhooks/__ORG__'
+        url: '/api/mock/stripe/webhooks/__ORG__'
       }],
       [{
         icon: 'web_asset',
         title: 'Requests',
         type: 'request',
-        url: '/ui/requests'
+        url: '/api/mock/stripe/requests'
       }]
     ],
     object: null,
@@ -180,7 +180,7 @@ new Vue({
   computed: {
   },
   created: function () {
-    this.$http.get('/ui/orgs').then(response => {
+    this.$http.get('/api/mock/stripe/orgs').then(response => {
       this.organizations = response.body
       this.organization = this.organizations[this.organizations.length - 1]
     })
@@ -202,7 +202,7 @@ new Vue({
       if (this.current.global) {
         this.organization = id
       } else {
-        const url = '/ui/__TYPE__/__ORG__/__ID__'
+        const url = '/api/mock/stripe/__TYPE__/__ORG__/__ID__'
         this.$http.get(url.replace('__ORG__', this.organization).
                        replace('__TYPE__', this.current.type).replace('__ID__', id)).
           then(function(response) {

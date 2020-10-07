@@ -24,7 +24,7 @@ function DataStore (mock, stripe) {
 
   ////////////////////////////////////////
 
-  mock.api.get('/data/stripe/store', stripe.req, (req, res, next) => {
+  mock.api.get('/api/mock/stripe/store', stripe.req, (req, res, next) => {
     res.sendRaw(200, JSON.stringify(store, null, 2));
     return next();
   });
