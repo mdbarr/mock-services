@@ -41,8 +41,19 @@ function DataStore (mock, sendgrid) {
   this.addUser = (user) => {
     user.name = user.name || user.username;
 
-    if (user.webhooks) {
+    if (Array.isArray(user.webhooks)) {
       store.webhooks[user.name] = user.webhooks;
+    }
+
+    if (!Array.isArray(user.domains) || !user.domains.length) {
+      user.domains = [ '*' ];
+    }
+
+    for (let i = 0; i < user.domains.length; i++) {
+      const domain = user.domains[i];
+      if (domain !== '*' && !domain.startsWith('@')) {
+        user.domains[i] = `@${ domain }`;
+      }
     }
 
     return store.users.push(user);

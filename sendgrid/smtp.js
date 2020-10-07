@@ -6,9 +6,7 @@ const simpleParser = require('mailparser').simpleParser;
 function SMTP (mock, sendgrid) {
   //////////////////////////////////////////////////
 
-  this.connect = (session, callback) => {
-    callback(null);
-  };
+  this.connect = (session, callback) => callback(null);
 
   this.auth = (auth, session, callback) => {
     for (const user of sendgrid.store.getUsers()) {
@@ -23,12 +21,18 @@ function SMTP (mock, sendgrid) {
   };
 
   this.mailFrom = (address, session, callback) => {
-    callback(null);
+    if (Array.isArray(session.user.domains)) {
+      for (const domain of session.user.domains) {
+        if (domain === '*' || address.address.endsWith(domain)) {
+          return callback(null);
+        }
+      }
+    }
+
+    return callback(new Error('Email not allowed from this domain'));
   };
 
-  this.rcptTo = (address, session, callback) => {
-    callback(null);
-  };
+  this.rcptTo = (address, session, callback) => callback(null);
 
   this.message = (session, message, callback) => {
     sendgrid.messages.message({
@@ -45,17 +49,15 @@ function SMTP (mock, sendgrid) {
       passthrough: session.user.passthrough,
     });
 
-    callback(null);
+    return callback(null);
   };
 
-  this.data = (stream, session, callback) => {
-    simpleParser(stream, (err, message) => {
-      if (err) {
-        return callback(err);
-      }
-      return this.message(session, message, callback);
-    });
-  };
+  this.data = (stream, session, callback) => simpleParser(stream, (err, message) => {
+    if (err) {
+      return callback(err);
+    }
+    return this.message(session, message, callback);
+  });
 
   //////////////////////////////////////////////////
 
