@@ -61,7 +61,7 @@ function API (mock, sendgrid) {
   //////////////////////////////////////////////////
   // Interaction API
 
-  mock.api.get('/api/mock/sendgrid/users', sendgrid.req, (req, res, next) => {
+  mock.api.get('/api/mock/sendgrid/users', (req, res, next) => {
     const response = {
       items: [],
       count: 0,
@@ -80,7 +80,7 @@ function API (mock, sendgrid) {
     return next();
   });
 
-  mock.api.get('/api/mock/sendgrid/messages/:to', sendgrid.req, (req, res, next) => {
+  mock.api.get('/api/mock/sendgrid/messages/:to', (req, res, next) => {
     const all = mock.utils.toBoolean(req.query.all);
     const full = mock.utils.toBoolean(req.query.full);
     const read = mock.utils.toBoolean(req.query.read);
@@ -119,7 +119,7 @@ function API (mock, sendgrid) {
     return next();
   });
 
-  mock.api.get('/api/mock/sendgrid/messages/:to/:index', sendgrid.req, (req, res, next) => {
+  mock.api.get('/api/mock/sendgrid/messages/:to/:index', (req, res, next) => {
     const message = sendgrid.store.getMessages(req.params.to)[req.params.index];
     if (message) {
       message.read = true;
@@ -130,7 +130,7 @@ function API (mock, sendgrid) {
     return next();
   });
 
-  mock.api.get('/api/mock/sendgrid/message/:id', sendgrid.req, (req, res, next) => {
+  mock.api.get('/api/mock/sendgrid/message/:id', (req, res, next) => {
     const message = sendgrid.store.getMessageById(req.params.id);
     if (!message) {
       res.send(404, { message: 'message not found' });
@@ -140,19 +140,19 @@ function API (mock, sendgrid) {
     return next();
   });
 
-  mock.api.get('/api/mock/sendgrid/messages', sendgrid.req, (req, res, next) => {
+  mock.api.get('/api/mock/sendgrid/messages', (req, res, next) => {
     const store = sendgrid.store.getMessageStore();
     res.sendRaw(200, JSON.stringify(store, null, 2));
     return next();
   });
 
-  mock.api.get('/api/mock/sendgrid/store', sendgrid.req, (req, res, next) => {
+  mock.api.get('/api/mock/sendgrid/store', (req, res, next) => {
     const store = sendgrid.store.getMessageStore();
     res.sendRaw(200, JSON.stringify(store, null, 2));
     return next();
   });
 
-  mock.api.del('/api/mock/sendgrid/store', sendgrid.req, (req, res, next) => {
+  mock.api.del('/api/mock/sendgrid/store', (req, res, next) => {
     sendgrid.store.clear();
     res.send(200, { message: 'datastore cleared' });
     return next();

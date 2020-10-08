@@ -14,6 +14,7 @@ function SMTP (mock, sendgrid) {
         if (!user.password || auth.password === user.password) {
           return callback(null, { user });
         }
+        sendgrid.log.error(`invalid password for ${ auth.username }`);
         return callback(new Error('Invalid username or password'));
       }
     }
@@ -29,6 +30,7 @@ function SMTP (mock, sendgrid) {
       }
     }
 
+    sendgrid.log.error(`invalid domain for ${ session.user.username }: ${ address.address }`);
     return callback(new Error('Email not allowed from this domain'));
   };
 
@@ -49,6 +51,7 @@ function SMTP (mock, sendgrid) {
       passthrough: session.user.passthrough,
     });
 
+    sendgrid.log.info(`message accept for ${ message.to.value[0].address }`);
     return callback(null);
   };
 
