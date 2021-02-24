@@ -1,6 +1,6 @@
 {
   "name": "mock-services",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Mock Services for Test Automation",
   "main": "index.js",
   "repository": "git@github.com:mdbarr/mock-services.git",
@@ -25,6 +25,6 @@
   "scripts": {
     "build": "docker build --pull -t mock-services .",
     "lint": "eslint *.js bin lib dns sendgrid stripe",
-    "start": "docker run -d --rm --name mock-services -p 5775:5775 -p 5870:5870 mock-services:latest"
+    "start": "docker run -d --rm --name mock-services -p 8425:8425 -p 8453:8453/udp -p 8480:8480 mock-services:latest"
   }
 }
