@@ -8,10 +8,10 @@
   "license": "MIT",
   "dependencies": {
     "async": "^3.2.0",
-    "barrkeep": "^2.8.0",
+    "barrkeep": "^2.9.0",
     "dns-packet": "^5.2.1",
     "mailparser": "^3.1.0",
-    "nodemailer": "^6.4.18",
+    "nodemailer": "^6.5.0",
     "request": "^2.88.2",
     "restify": "^8.5.1",
     "restify-cors-middleware": "^1.1.1",
@@ -20,7 +20,7 @@
     "yargs": "^16.2.0"
   },
   "devDependencies": {
-    "eslint": "^7.20.0"
+    "eslint": "^7.22.0"
   },
   "scripts": {
     "build": "docker build --pull -t mock-services .",
