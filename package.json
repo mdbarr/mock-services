@@ -49,11 +49,12 @@
     "vuetify-loader": "^1.7.2"
   },
   "scripts": {
-    "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
+    "build:docker": "docker build --pull -t mock-services .",
+    "fix": "yarn lint --fix; yarn lint:css --fix; yarn lint:api --fix",
     "lint": "vue-cli-service lint",
-    "lint:api": "eslint --no-eslintrc -c ./lib/.eslintrc.js bin dns lib sendgrid stripe",
+    "lint:api": "eslint --no-eslintrc -c ./lib/.eslintrc.js bin lib",
     "lint:css": "stylelint 'src/*.vue' 'src/**/*.vue'",
-    "fix": "yarn lint --fix; yarn lint:css --fix; yarn lint:api --fix"
+    "serve": "vue-cli-service serve"
   }
 }

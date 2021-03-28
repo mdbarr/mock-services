@@ -6,9 +6,17 @@ COPY package.json yarn.lock ./
 
 RUN yarn install
 
-COPY . .
+COPY *.js .* ./
+
+COPY public public
+
+COPY ./lib/defaults.js ./lib/defaults.js
+
+COPY src src
 
 RUN yarn build
+
+
 
 FROM node:erbium-alpine
 
@@ -20,7 +28,9 @@ RUN yarn install --production
 
 COPY --from=builder /mock-services/dist dist
 
-COPY . .
+COPY bin bin
+
+COPY lib lib
 
 EXPOSE 8425 8453 8480
 
