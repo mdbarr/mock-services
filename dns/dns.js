@@ -76,7 +76,7 @@ function DNS (mock) {
 
       result = result.map((data) => Object.assign({}, question, {
         data,
-        ttl: 300,
+        ttl: mock.config.dns.ttl,
       }));
 
       return callback(null, result);
@@ -116,8 +116,12 @@ function DNS (mock) {
       this.log.verbose('resolve done');
       this.log.verbose(response);
 
-      const packet = dnsPacket.encode(response);
-      return this.socket.send(packet, 0, packet.length, rinfo.port, rinfo.address);
+      try {
+        const packet = dnsPacket.encode(response);
+        this.socket.send(packet, 0, packet.length, rinfo.port, rinfo.address);
+      } catch (error) {
+        this.log.error('error', error);
+      }
     });
   });
 
@@ -131,6 +135,40 @@ function DNS (mock) {
       }
     }
   };
+
+  //////////
+
+  mock.api.get('/api/mock/dns/:type(a|aaaa|cname|mx|ptr|srv|txt)', (req, res, next) => {
+    const type = req.params.type.toUpperCase();
+    const records = this.config.records[type];
+
+    res.send(200, records);
+    return next();
+  });
+
+  mock.api.put('/api/mock/dns/:type(a|aaaa|cname|mx|ptr|srv|txt)', (req, res, next) => {
+    const type = req.params.type.toUpperCase();
+    const records = this.config.records[type];
+
+    for (const key in req.body) {
+      records[key] = req.body[key];
+    }
+
+    res.send(200, records);
+    return next();
+  });
+
+  mock.api.del('/api/mock/dns/:type(a|aaaa|cname|mx|ptr|srv|txt)', (req, res, next) => {
+    const type = req.params.type.toUpperCase();
+    const records = this.config.records[type];
+
+    for (const key in req.body) {
+      delete records[key];
+    }
+
+    res.send(200, records);
+    return next();
+  });
 
   //////////
 
