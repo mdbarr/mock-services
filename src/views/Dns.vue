@@ -3,7 +3,8 @@
     <v-card
       v-for="type in constants.dns.types"
       :key="type"
-      class="ma-2"
+      class="ma-4"
+      :max-width="1000"
     >
       <v-card-title class="dns-card-title ma-0 pa-1 pl-2 white--text">
         <span>
@@ -15,7 +16,7 @@
             dark
             icon
             small
-            class="mr-4"
+            class="mr-2"
           >
             <v-icon small>mdi-plus</v-icon>
           </v-btn>
@@ -37,7 +38,9 @@
             :key="key"
             class="dns-card-record"
           >
-            {{ key }} IN {{ type | uppercase }} {{ value | record }}
+            <span class="blue--text">{{ key }}</span>
+            IN {{ type | uppercase }}
+            <span class="purple--text">{{ value | record }}</span>
           </div>
         </div>
         <div
@@ -64,6 +67,8 @@ export default {
       } else if (typeof value === 'object' && value !== null) {
         if (value.preference && value.exchange) {
           return `${ value.preference } ${ value.exchange }`;
+        } else if (value.priority && value.weight && value.port && value.target) {
+          return `${ value.priority } ${ value.weight } ${ value.port } ${ value.target }`;
         }
       }
       return '';
