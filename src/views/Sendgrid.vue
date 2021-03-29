@@ -77,6 +77,7 @@
         ref="iframe"
         width="100%"
         height="100%"
+        sandbox="allow-top-navigation allow-scripts allow-forms"
         style="border: none;"
       />
     </div>

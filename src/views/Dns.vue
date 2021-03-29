@@ -13,6 +13,7 @@
         <v-spacer />
         <span>
           <v-btn
+            v-if="false"
             dark
             icon
             small
@@ -38,7 +39,7 @@
             :key="key"
             class="dns-card-record"
           >
-            <span class="blue--text">{{ key }}</span>
+            <span :class="keyClass(key)">{{ key }}</span>
             IN {{ type | uppercase }}
             <span class="purple--text">{{ value | record }}</span>
           </div>
@@ -87,6 +88,12 @@ export default {
     }
   },
   methods: {
+    keyClass (key) {
+      if (key.startsWith('/')) {
+        return 'teal--text';
+      }
+      return 'blue--text';
+    },
     refresh (type) {
       this.$api.get(`/api/mock/dns/${ type }`).
         then((response) => {

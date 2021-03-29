@@ -1,4 +1,4 @@
-FROM node as builder
+FROM node:erbium as builder
 
 WORKDIR /mock-services
 

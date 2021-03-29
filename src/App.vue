@@ -59,8 +59,9 @@
       app
       dark
       dense
+      height="28"
+      class="pt-0"
     >
-      <v-spacer />
       <v-btn
         icon
         small
@@ -70,6 +71,8 @@
           mdi-theme-light-dark
         </v-icon>
       </v-btn>
+      <v-spacer />
+      <span class="caption font-weight-bold">mock-services v{{ state.version }}</span>
     </v-footer>
   </v-app>
 </template>
