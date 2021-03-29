@@ -162,6 +162,7 @@ module.exports = {
     'template-curly-spacing': [ 'error', 'always' ],
     'use-isnan': 'error',
     'valid-typeof': 'error',
+    'vue/valid-v-slot': [ 'error', { allowModifiers: true } ],
     'yield-star-spacing': [ 'error', 'before' ],
     yoda: 'error',
   },

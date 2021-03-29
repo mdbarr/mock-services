@@ -102,4 +102,8 @@ export default {
   font-family: 'Roboto Mono', monospace;
   letter-spacing: 2px;
 }
+
+.full-height {
+  height: 100% !important;
+}
 </style>
