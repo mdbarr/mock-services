@@ -1,6 +1,10 @@
 const defaults = require('./lib/defaults');
+const { execSync } = require('child_process');
 const StyleLintPlugin = require('stylelint-webpack-plugin');
 const MomentLocalesPlugin = require('moment-locales-webpack-plugin');
+
+process.env.VUE_APP_GIT_HASH = execSync('git log --format="%h" -n 1').toString().
+  trim();
 
 module.exports = {
   configureWebpack: {

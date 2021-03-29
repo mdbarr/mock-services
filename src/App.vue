@@ -72,7 +72,9 @@
         </v-icon>
       </v-btn>
       <v-spacer />
-      <span class="caption font-weight-bold">mock-services v{{ state.version }}</span>
+      <span class="mock-services-footer">
+        mock-services v{{ state.version }}.{{ hash }}
+      </span>
     </v-footer>
   </v-app>
 </template>
@@ -83,7 +85,10 @@ import state from '@/state';
 export default {
   name: 'App',
   data () {
-    return { state };
+    return {
+      state,
+      hash: process.env.VUE_APP_GIT_HASH,
+    };
   },
   computed: {
     title () {
@@ -104,6 +109,12 @@ export default {
 .mock-services-title {
   font-family: 'Roboto Mono', monospace;
   letter-spacing: 2px;
+}
+
+.mock-services-footer {
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 1px;
 }
 
 .full-height {
