@@ -24,7 +24,7 @@ WORKDIR /mock-services
 
 COPY package.json yarn.lock ./
 
-RUN yarn install --production
+RUN yarn install --production && yarn cache clean
 
 COPY --from=builder /mock-services/dist dist
 
