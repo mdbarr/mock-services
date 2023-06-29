@@ -6,7 +6,7 @@ module.exports = {
     'plugin:vue/recommended',
     '@vue/standard',
   ],
-  parserOptions: { parser: 'babel-eslint' },
+  parserOptions: { parser: '@babel/eslint-parser' },
   rules: {
     'accessor-pairs': 'error',
     'array-bracket-newline': [ 'error', { multiline: true } ],
@@ -162,8 +162,10 @@ module.exports = {
     'template-curly-spacing': [ 'error', 'always' ],
     'use-isnan': 'error',
     'valid-typeof': 'error',
+    'vue/no-v-html': 'off',
     'vue/valid-v-slot': [ 'error', { allowModifiers: true } ],
     'yield-star-spacing': [ 'error', 'before' ],
     yoda: 'error',
+    'vue/multi-word-component-names': 'off',
   },
 };

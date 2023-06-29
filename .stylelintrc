@@ -1,12 +1,11 @@
 {
-  "extends": "stylelint-config-standard",
+  "extends": "stylelint-config-recommended-vue",
   "plugins": [
     "stylelint-order"
   ],
   "rules": {
     "color-named": "always-where-possible",
     "font-weight-notation": "named-where-possible",
-    "max-line-length": 100,
     "order/order": [
       "custom-properties",
       "declarations"
