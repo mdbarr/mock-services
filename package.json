@@ -18,7 +18,7 @@
     "moment": "^2.29.1",
     "nodemailer": "^6.6.1",
     "request": "^2.88.2",
-    "restify": "^8.6.1",
+    "restify": "^11.1.0",
     "restify-cors-middleware2": "^2.1.2",
     "smtp-server": "^3.9.0",
     "starkbank-ecdsa": "^1.1.2",
