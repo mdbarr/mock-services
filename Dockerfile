@@ -1,4 +1,4 @@
-FROM node:erbium as builder
+FROM node:hydrogen as builder
 
 WORKDIR /mock-services
 
@@ -18,7 +18,7 @@ RUN yarn build
 
 
 
-FROM node:erbium-alpine
+FROM node:hydrogen-alpine
 
 WORKDIR /mock-services
 
@@ -32,6 +32,6 @@ COPY bin bin
 
 COPY lib lib
 
-EXPOSE 8425 8453/udp 8480
+EXPOSE 8425 8453/udp 8443
 
 ENTRYPOINT [ "./bin/cli.js" ]
