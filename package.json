@@ -21,7 +21,6 @@
     "restify": "^11.1.0",
     "restify-cors-middleware2": "^2.1.2",
     "smtp-server": "^3.9.0",
-    "starkbank-ecdsa": "^1.1.2",
     "vue": "^2.6.14",
     "vue-router": "^3.6.5",
     "vuetify": "^2.6.0",
