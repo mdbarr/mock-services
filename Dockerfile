@@ -1,4 +1,4 @@
-FROM node:hydrogen as builder
+FROM node:iron as builder
 
 WORKDIR /mock-services
 
@@ -18,7 +18,7 @@ RUN yarn build
 
 
 
-FROM node:hydrogen-alpine
+FROM node:iron-alpine
 
 WORKDIR /mock-services
 
