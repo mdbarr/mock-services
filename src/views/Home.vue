@@ -45,15 +45,15 @@
     <v-card
       width="325"
       class="ma-4"
-      to="logs"
+      to="idp"
       color="cyan"
       dark
     >
       <v-card-text class="home-card">
         <v-icon class="pr-3">
-          mdi-file-document-outline
+          mdi-card-account-details-outline
         </v-icon>
-        Logs
+        IDP / SSO
       </v-card-text>
     </v-card>
   </v-row>
