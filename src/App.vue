@@ -28,9 +28,9 @@
             mdi-credit-card
           </v-icon>
         </v-tab>
-        <v-tab to="logs">
+        <v-tab to="idp">
           <v-icon left>
-            mdi-file-document-outline
+            mdi-card-account-details-outline
           </v-icon>
         </v-tab>
       </v-tabs>
@@ -43,11 +43,12 @@
       dark
       dense
     >
-      <v-icon class="pr-5">
-        mdi-application-cog
-      </v-icon>
-
-      <v-toolbar-title class="mock-services-title font-weight-bold">
+      <img
+        src="./assets/mock-services.png"
+        height="32"
+        class="pr-5"
+      >
+      <v-toolbar-title class="mock-services-title">
         MOCK SERVICES {{ title }}
       </v-toolbar-title>
     </v-app-bar>
@@ -60,7 +61,7 @@
       dark
       dense
       height="28"
-      class="pt-0"
+      class="pt-0 d-flex"
     >
       <v-btn
         icon
@@ -107,17 +108,22 @@ export default {
 }
 
 .mock-services-title {
-  font-family: 'Roboto Mono', monospace;
+  font-family: 'Fira Code', monospace;
+  font-size: 24px;
   letter-spacing: 2px;
 }
 
 .mock-services-footer {
-  font-size: 11px;
-  font-weight: bold;
+  font-family: 'Fira Code', monospace;
+  font-size: 9px;
   letter-spacing: 1px;
 }
 
 .full-height {
   height: 100% !important;
+}
+
+.icon-medium {
+  font-size: 20px !important;
 }
 </style>

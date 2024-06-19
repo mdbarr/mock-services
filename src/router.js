@@ -7,6 +7,7 @@ import Dns from '@/views/Dns';
 import Sendgrid from '@/views/Sendgrid';
 import Stripe from '@/views/Stripe';
 import Logs from '@/views/Logs';
+import Idp from '@/views/Idp';
 
 Vue.use(VueRouter);
 
@@ -36,6 +37,11 @@ const routes = [
     path: '/logs',
     meta: { title: ' / Logs' },
     component: Logs,
+  }, {
+    name: 'idp',
+    path: '/idp',
+    meta: { title: ' / IDP' },
+    component: Idp,
   },
 ];
 

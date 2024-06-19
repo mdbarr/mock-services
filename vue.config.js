@@ -15,8 +15,10 @@ module.exports = {
   },
   devServer: {
     host: '0.0.0.0',
-    disableHostCheck: true,
-    proxy: { '^/api': { target: `https://localhost:${ defaults.port }` } },
+    proxy: {
+      '^/api': { target: `http://localhost.mock-services.io:${ defaults.port }` },
+      '^/idp/': { target: `http://localhost.mock-services.io:${ defaults.port }` },
+    },
   },
   filenameHashing: process.env.NODE_ENV !== 'production',
   transpileDependencies: [ 'vuetify' ],

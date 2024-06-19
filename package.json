@@ -27,6 +27,7 @@
   "devDependencies": {
     "@babel/core": "^7.12.16",
     "@babel/eslint-parser": "^7.12.16",
+    "@highlightjs/vue-plugin": "^1.0.2",
     "@hyperingenuity/events": "^0.4.3",
     "@hyperingenuity/vue-plugin": "^0.8.6",
     "@vue/cli-plugin-babel": "^5.0.0",

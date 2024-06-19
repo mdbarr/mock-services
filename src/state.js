@@ -1,4 +1,4 @@
-import { version } from '@/../package.json';
+const version = require('../package').version;
 
 function State () {
   this.version = version;
