@@ -28,5 +28,3 @@ mock-services.config.js
 # log files
 error.log
 mock-services.log
-
-build.sh
