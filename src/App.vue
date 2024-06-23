@@ -44,7 +44,7 @@
       dense
     >
       <img
-        src="./assets/mock-services.png"
+        src="/mock-services.png"
         height="32"
         class="pr-5"
       >

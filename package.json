@@ -53,6 +53,9 @@
     "vuetify": "^2.6.0",
     "vuetify-loader": "^1.7.0"
   },
+  "resolutions": {
+    "**/postcss": "^8.4.31"
+  },
   "scripts": {
     "build": "vue-cli-service build",
     "build:docker": "docker build --pull -t mock-services .",
