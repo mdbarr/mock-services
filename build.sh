@@ -42,27 +42,29 @@ build() {
 ##########
 # CLI Options
 
-for arg in "$@"; do
-    case "$arg" in
+while [ $# -gt 0 ]; do
+    case "$1" in
         --multiplatform | --multi-platform)
             MULTIPLATFORM=1
             ;;
         --name)
+            NAME="$2"
             shift
-            NAME="$1"
             ;;
         --registry)
+            REGISTRY="$2"
             shift
-            REGISTRY="$1"
+
             if [[ "$REGISTRY" != */ ]]; then
                 REGISTRY="${REGISTRY}/"
             fi
             ;;
         --tag)
+            TAG="$2"
             shift
-            TAG="$1"
             ;;
     esac
+    shift
 done
 
 ##########
