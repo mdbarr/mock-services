@@ -40,7 +40,7 @@ const routes = [
   }, {
     name: 'idp',
     path: '/idp',
-    meta: { title: ' / IDP' },
+    meta: { title: ' / IDP SAML' },
     component: Idp,
   },
 ];
