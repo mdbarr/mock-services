@@ -12,6 +12,6 @@ COPY bin bin
 
 COPY lib lib
 
-EXPOSE 8425 8453/udp 8443
+EXPOSE 8425 8453/udp 8480
 
 ENTRYPOINT [ "./bin/cli.js" ]
