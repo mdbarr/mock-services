@@ -28,3 +28,7 @@ mock-services.config.js
 # log files
 error.log
 mock-services.log
+
+# clients
+v2
+v3
