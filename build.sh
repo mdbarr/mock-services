@@ -5,14 +5,16 @@ MULTIPLATFORM=0
 NAME="mock-services"
 PLATFORMS="arm64 amd64"
 REGISTRY=""
-TAG="latest"
+TAG=$(jq -r '.version' < package.json)
 
 createManifest() {
     local image="$1"
     shift
     local images="$@"
 
-    docker manifest rm "${REGISTRY}${image}"
+    if docker manifest inspect "${REGISTRY}${image}" > /dev/null 2>&1; then
+        docker manifest rm "${REGISTRY}${image}"
+    fi
 
     docker manifest create "${REGISTRY}${image}" $images
 
